@@ -1,0 +1,168 @@
+{
+    "types" : [
+        {
+            "nom" : "boolean_t",
+            "type" : "atom*",
+            "declaration" : "uint8_t",
+            "domaine" : "0..1",
+            "commentaire" : "Type booléen (0 = faux, 1 = vrai)"
+        },
+        {
+            "nom" : "uint8_t",
+            "type" : "atom*",
+            "declaration" : "uint8_t",
+            "domaine" : "0..255",
+            "commentaire" : "Entier non signé 8 bits"
+        },
+        {
+            "nom" : "uint16_t",
+            "type" : "atom",
+            "declaration" : "uint16_t",
+            "domaine" : "0..65535",
+            "commentaire" : "Entier non signé 16 bits"
+        },
+        {
+            "nom" : "uint32_t",
+            "type" : "atom*",
+            "declaration" : "uint32_t",
+            "domaine" : "0..4294967295",
+            "commentaire" : "Entier non signé 32 bits"
+        },
+        {
+            "nom" : "enum_probleme_chassis_t",
+            "type" : "enum",
+            "declaration" : [
+                {
+                    "nom" : "AUCUN",
+                    "valeur" : 0,
+                    "commentaire" : "Aucun probleme"
+                },
+                {
+                    "nom" : "PRESSION_PNEUS",
+                    "valeur" : 1,
+                    "commentaire" : "Probleme sur la pression des pneus"
+                },
+                {
+                    "nom" : "DEFAILLANCE_FREINS",
+                    "valeur" : 2,
+                    "commentaire" : "Probleme de defaillance sur les freins"
+                }
+            ],
+            "domaine" : "0..2",
+            "commentaire" : "Problemes lies au chassis"
+        },
+        {
+            "nom" : "enum_probleme_moteur_t",
+            "type" : "enum",
+            "declaration" : [
+                {
+                    "nom" : "AUCUN",
+                    "valeur" : 0,
+                    "commentaire" : "Aucun probleme"
+                },
+                {
+                    "nom" : "DEFAUT_PRESSION",
+                    "valeur" : 1,
+                    "commentaire" : "Probleme de defaut de pression"
+                },
+                {
+                    "nom" : "TEMPERATURE_LDR",
+                    "valeur" : 2,
+                    "commentaire" : "Probleme de temperature du LDR"
+                },
+                {
+                    "nom" : "SURCHAUFFE_HUILE",
+                    // Garder 4 ? ou mettre 3 ?
+                    "valeur" : 4,
+                    "commentaire" : "Probleme de surchauffe de l'huile"
+                }
+            ],
+            // Pareil ici ?
+            "domaine" : "0..4",
+            "commentaire" : "Problemes lies au moteur"
+        },
+        {
+            "nom" : "enum_probleme_batterie_t",
+            "type" : "enum",
+            "declaration" : [
+                {
+                    "nom" : "AUCUN",
+                    "valeur" : 0,
+                    "commentaire" : "Aucun probleme"
+                },
+                {
+                    "nom" : "DECHARGEE",
+                    "valeur" : 1,
+                    "commentaire" : "Probleme de batterie dechargee"
+                },
+                {
+                    "nom" : "PANNE",
+                    "valeur" : 2,
+                    "commentaire" : "Probleme de panne de batterie"
+                }
+            ],
+            "domaine" : "0..2",
+            "commentaire" : "Problemes lies à la batterie"
+        },
+        {
+            "nom" : "enum_etat_feu_t",
+            "type" : "enum",
+            "declaration" : [
+                {
+                    "nom" : "FEU_ETEINT",
+                    "valeur" : 0,
+                    "commentaire" : "Eteint"
+                },
+                {
+                    "nom" : "FEU_ALLUME",
+                    "valeur" : 1,
+                    "commentaire" : "En cours Allumage"
+                },
+                {
+                    "nom" : "FEU_ACQUITTE",
+                    "valeur" : 2,
+                    "commentaire" : "Allumé"
+                },
+                {
+                    "nom" : "FEU_ERREUR",
+                    "valeur" : 3,
+                    "commentaire" : "Erreur"
+                }
+            ],
+            "domaine" : "0..3",
+            "commentaire" : "Etats des feux (position, croisement ou route"
+        },
+         {
+            "nom" : "enum_etat_glace_t",
+            "type" : "enum",
+            "declaration" : [
+                {
+                    "nom" : "ESSUIE_GLACE_ARRET",
+                    "valeur" : 0,
+                    "commentaire" : "Tout éteint"
+                },
+                {
+                    "nom" : "ESSUIE_GLACE_ACTIF",
+                    "valeur" : 1,
+                    "commentaire" : "Essuie-glaces activés"
+                },
+                {
+                    "nom" : "LAVE_GLACE_ACTIF",
+                    "valeur" : 2,
+                    "commentaire" : "Lave-glace + essuie-glaces activés"
+                },
+                {
+                    "nom" : "ESSUIE_GLACE_TIMER_ARRET",
+                    "valeur" : 3,
+                    "commentaire" : "Arrêt temporisé"
+                }
+            ],
+            "domaine" : "0..3",
+            // Garder les 2 types dans la même enum ??
+            "commentaire" : "Etats des essuie-glaces et du lave glace"
+        },
+    ],
+    "data" : {
+        
+    }
+}
