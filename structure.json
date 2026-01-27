@@ -2,28 +2,28 @@
     "types" : [
         {
             "nom" : "boolean_t",
-            "type" : "atom*",
+            "type" : "atom",
             "declaration" : "uint8_t",
             "domaine" : "0..1",
             "commentaire" : "Type booléen (0 = faux, 1 = vrai)"
         },
         {
-            "nom" : "uint8_t",
-            "type" : "atom*",
+            "nom" : "v_uint8_t",
+            "type" : "atom",
             "declaration" : "uint8_t",
             "domaine" : "0..255",
             "commentaire" : "Entier non signé 8 bits"
         },
         {
-            "nom" : "uint16_t",
+            "nom" : "v_uint16_t",
             "type" : "atom",
             "declaration" : "uint16_t",
             "domaine" : "0..65535",
             "commentaire" : "Entier non signé 16 bits"
         },
         {
-            "nom" : "uint32_t",
-            "type" : "atom*",
+            "nom" : "v_uint32_t",
+            "type" : "atom",
             "declaration" : "uint32_t",
             "domaine" : "0..4294967295",
             "commentaire" : "Entier non signé 32 bits"
@@ -72,12 +72,10 @@
                 },
                 {
                     "nom" : "SURCHAUFFE_HUILE",
-                    // Garder 4 ? ou mettre 3 ?
                     "valeur" : 4,
                     "commentaire" : "Probleme de surchauffe de l'huile"
                 }
             ],
-            // Pareil ici ?
             "domaine" : "0..4",
             "commentaire" : "Problemes lies au moteur"
         },
@@ -104,65 +102,63 @@
             "domaine" : "0..2",
             "commentaire" : "Problemes lies à la batterie"
         },
+      
         {
-            "nom" : "enum_etat_feu_t",
-            "type" : "enum",
-            "declaration" : [
+            "nom": "enum_id_message_feu_t",
+            "type": "enum",
+            "declaration": [
                 {
-                    "nom" : "FEU_ETEINT",
-                    "valeur" : 0,
-                    "commentaire" : "Eteint"
+                    "nom": "MSG_FEU_POSITION",
+                    "valeur": 1,
+                    "commentaire": "Feux de position"
                 },
                 {
-                    "nom" : "FEU_ALLUME",
-                    "valeur" : 1,
-                    "commentaire" : "En cours Allumage"
+                    "nom": "MSG_FEU_CROISEMENT",
+                    "valeur": 2,
+                    "commentaire": "Feux de croisement"
                 },
                 {
-                    "nom" : "FEU_ACQUITTE",
-                    "valeur" : 2,
-                    "commentaire" : "Allumé"
+                    "nom": "MSG_FEU_ROUTE",
+                    "valeur": 3,
+                    "commentaire": "Feux de route"
                 },
                 {
-                    "nom" : "FEU_ERREUR",
-                    "valeur" : 3,
-                    "commentaire" : "Erreur"
+                    "nom": "MSG_CLIGNOTANT_DROIT",
+                    "valeur": 4,
+                    "commentaire": "Clignotant droit"
+                },
+                {
+                    "nom": "MSG_CLIGNOTANT_GAUCHE",
+                    "valeur": 5,
+                    "commentaire": "Clignotant gauche"
                 }
             ],
-            "domaine" : "0..3",
-            "commentaire" : "Etats des feux (position, croisement ou route"
-        },
-         {
-            "nom" : "enum_etat_glace_t",
-            "type" : "enum",
-            "declaration" : [
-                {
-                    "nom" : "ESSUIE_GLACE_ARRET",
-                    "valeur" : 0,
-                    "commentaire" : "Tout éteint"
-                },
-                {
-                    "nom" : "ESSUIE_GLACE_ACTIF",
-                    "valeur" : 1,
-                    "commentaire" : "Essuie-glaces activés"
-                },
-                {
-                    "nom" : "LAVE_GLACE_ACTIF",
-                    "valeur" : 2,
-                    "commentaire" : "Lave-glace + essuie-glaces activés"
-                },
-                {
-                    "nom" : "ESSUIE_GLACE_TIMER_ARRET",
-                    "valeur" : 3,
-                    "commentaire" : "Arrêt temporisé"
-                }
-            ],
-            "domaine" : "0..3",
-            // Garder les 2 types dans la même enum ??
-            "commentaire" : "Etats des essuie-glaces et du lave glace"
-        },
+            "commentaire": "Identifiant du message BCGV vers BGF"
+        }
     ],
-    "data" : {
+    "donnees" : [
         
-    }
+        { "id" : 1, "nom" : "commande_warning", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Commande warning (COMODO 500ms)" },
+        { "id" : 2, "nom" : "commande_feux_position", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Commande feux de position" },
+        { "id" : 3, "nom" : "commande_feux_croisement", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Commande feux de croisement" },
+        { "id" : 4, "nom" : "commande_feux_route", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Commande feux de route" },
+        { "id" : 5, "nom" : "commande_clignotant_droit", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Commande clignotant droit" },
+        { "id" : 6, "nom" : "commande_clignotant_gauche", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Commande clignotant gauche" },
+        { "id" : 7, "nom" : "commande_essuie_glace", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Commande essuie-glaces" },
+        { "id" : 8, "nom" : "commande_lave_glace", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Commande lave-glace" },
+        
+        { "id" : 9, "nom" : "numero_de_trame", "type" : "v_uint8_t", "dimension" : "1", "init" : "0", "commentaire" : "Numéro de trame UDP 100ms" },
+        { "id" : 10, "nom" : "kilometrage", "type" : "v_uint32_t", "dimension" : "1", "init" : "0", "commentaire" : "Kilométrage (km)" },
+        { "id" : 11, "nom" : "vitesse", "type" : "v_uint8_t", "dimension" : "1", "init" : "0", "commentaire" : "Vitesse (km/h)" },
+        { "id" : 12, "nom" : "probleme_chassis", "type" : "enum_probleme_chassis_t", "dimension" : "1", "init" : "0", "commentaire" : "Problème châssis (0x0 aucun, 0x1 pneus, 0x2 freins)" },
+        { "id" : 13, "nom" : "probleme_moteur", "type" : "enum_probleme_moteur_t", "dimension" : "1", "init" : "0", "commentaire" : "Problèmes moteur (0x0 aucun, 0x1 pression, 0x2 LDR, 0x4 huile)" },
+        { "id" : 14, "nom" : "niveau_reservoir", "type" : "v_uint8_t", "dimension" : "1", "init" : "0", "commentaire" : "Niveau réservoir (litres), max 40" },
+        { "id" : 15, "nom" : "regime_trmin", "type" : "v_uint32_t", "dimension" : "1", "init" : "0", "commentaire" : "Tours/minute, max 10000" },
+        { "id" : 16, "nom" : "probleme_batterie", "type" : "enum_probleme_batterie_t", "dimension" : "1", "init" : "0", "commentaire" : "Problèmes batterie (0x0 aucun, 0x1 déchargée, 0x2 panne)" },
+        { "id" : 17, "nom" : "CRC8", "type" : "v_uint8_t", "dimension" : "1", "init" : "0", "commentaire" : "CRC8 reçus" },
+        
+        { "id" : 18, "nom" : "id_message", "type" : "enum_id_message_feu_t", "dimension" : "1", "init" : "0", "commentaire" : "ID du message pour la trame BCGV vers BGF" },
+        { "id" : 19, "nom" : "activation_feu", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Etat actuel du feu" }
+    ]
+    
 }
