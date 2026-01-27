@@ -2,6 +2,6 @@
 .idea/
 
 #Python
-__pycache__/
-.venv/
-
+lib/__pycache__/
+lib/.venv/
+lib/output/
