@@ -20,11 +20,11 @@ typedef {{ item.declaration }} {{ item.nom }};
 {% elif item.type == 'enum' -%}
 typedef enum {
     {%- for enum_item in item.declaration %}
-    {{ enum_item.nom }} = {{ enum_item.valeur }}, /**< {{ enum_item.commentaire }} */
+    {{ item.nom|upper }}_{{ enum_item.nom }} = {{ enum_item.valeur }}, /**< {{ enum_item.commentaire }} */
     {%- endfor %}
 } {{ item.nom }};
 {%- endif %}
 
 {%- endfor %}
 
-#endif TYPES_H
+#endif /* TYPES_H */

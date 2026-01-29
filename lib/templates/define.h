@@ -8,7 +8,6 @@
 #define DEFINE_H
 
 //TODO: mettre des noms spéciaux pour les booléens
-//TODO: ajouter rebouclage pour le numéro de trame
 
 {% for item in donnees -%}
     {%- set limites = item.domaine.split('..') -%}
@@ -20,4 +19,4 @@
 
 {% endfor %}
 
-#endif DEFINE_H
+#endif /* DEFINE_H */

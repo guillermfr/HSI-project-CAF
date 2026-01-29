@@ -41,4 +41,4 @@ typedef struct donnees_bcgv_t {
 
 
 
-#endif DONNEES_H
+#endif /* DONNEES_H */
