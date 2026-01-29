@@ -17,9 +17,12 @@
  * @return int Code de retour du programme
  */
 int main(void) {
+    // TODO: changer le nom des variables pour que ce soit en français
     v_int32_t drvHandle = 0;
     v_uint8_t udpFrame[DRV_UDP_100MS_FRAME_SIZE];
-    v_int8_t errorCode = 0;
+    serial_frame_t serialData[DRV_MAX_FRAMES];
+    v_uint32_t serialDataLen = 0;
+    v_int32_t errorCode = 0;
 
     drvHandle = drv_open();
 
@@ -33,16 +36,28 @@ int main(void) {
     }
 
     while(1) {
-        errorCode = drv_read_udp_100ms(drvHandle, udpFrame);
+        // TODO: revoir ordre des lectures
+        // LECTURE UDP
+        // errorCode = drv_read_udp_100ms(drvHandle, udpFrame);
 
-        if(errorCode == DRV_SUCCESS) {
-            for(v_uint8_t i = 0; i < DRV_UDP_100MS_FRAME_SIZE; i++) {
-                printf("Index : %u\tValeur : %u\n", i, udpFrame[i]);
+        // if(errorCode == DRV_SUCCESS) {
+        //     for(v_uint8_t i = 0; i < DRV_UDP_100MS_FRAME_SIZE; i++) {
+        //         printf("Index : %u\tValeur : %u\n", i, udpFrame[i]);
+        //     }
+        //     printf("\n\n");
+        // }
+        // else if(errorCode == DRV_ERROR) {
+        //     printf("Erreur lors de la lecture de la trame UDP\n");
+        // }
+
+        errorCode = drv_read_ser(drvHandle, serialData, &serialDataLen);
+
+        if (errorCode == DRV_SUCCESS && serialDataLen > 0) {
+            printf("serialDataLen : %d\n", serialDataLen);
+            for(v_uint32_t i = 0; i < serialDataLen; i++) {
+                printf("Index : %d\tValeur : %d\n", i, serialData[i].frame[0]);
             }
             printf("\n\n");
-        }
-        else if(errorCode == DRV_ERROR) {
-            printf("Erreur lors de la lecture de la trame UDP\n");
         }
     }
     
