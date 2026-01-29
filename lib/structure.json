@@ -29,6 +29,27 @@
             "commentaire" : "Entier non signé 32 bits"
         },
         {
+            "nom" : "v_int8_t",
+            "type" : "atom",
+            "declaration" : "int8_t",
+            "domaine" : "-128..127",
+            "commentaire" : "Entier signé 8 bits"
+        },
+        {
+            "nom" : "v_int16_t",
+            "type" : "atom",
+            "declaration" : "int16_t",
+            "domaine" : "-32768..32767",
+            "commentaire" : "Entier signé 16 bits"
+        },
+        {
+            "nom" : "v_int32_t",
+            "type" : "atom",
+            "declaration" : "int32_t",
+            "domaine" : "-2147483648..2147483647",
+            "commentaire" : "Entier signé 32 bits"
+        },
+        {
             "nom" : "numero_trame_t",
             "type" : "atom",
             "declaration" : "v_uint8_t",
