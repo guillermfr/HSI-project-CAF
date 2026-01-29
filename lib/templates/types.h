@@ -25,6 +25,6 @@ typedef enum {
 } {{ item.nom }};
 {%- endif %}
 
-{% endfor %}
+{%- endfor %}
 
 #endif TYPES_H

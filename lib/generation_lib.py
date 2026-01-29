@@ -47,6 +47,58 @@ def generer_fichier_types(donnees):
     except Exception as e:
         print(f"Erreur lors de la génération Jinja2 : {e}")
 
+def generer_fichier_constantes(donnees):
+    output_dir = "output"
+    
+    os.makedirs(output_dir, exist_ok=True)
+
+    try:
+        template = env.get_template("define.h")
+        
+        rendu_final = template.render(
+            donnees=donnees.get('types', []),
+            date=datetime.now().strftime("%d/%m/%Y")
+        )
+
+        chemin_complet = os.path.join(output_dir, "define.h")
+        with open(chemin_complet, "w", encoding="utf-8") as f:
+            f.write(rendu_final)
+            
+        print(f"Fichier créé : {chemin_complet}")
+
+    except Exception as e:
+        print(f"Erreur lors de la génération Jinja2 : {e}")
+
+def generer_fichier_donnees(donnees):
+    output_dir = "output"
+    
+    os.makedirs(output_dir, exist_ok=True)
+
+    try:
+        template = env.get_template("donnees.h")
+        
+        rendu_final = template.render(
+            donnees=donnees.get('donnees', []),
+            date=datetime.now().strftime("%d/%m/%Y")
+        )
+
+        chemin_complet = os.path.join(output_dir, "donnees.h")
+        with open(chemin_complet, "w", encoding="utf-8") as f:
+            f.write(rendu_final)
+            
+        print(f"Fichier créé : {chemin_complet}")
+
+        template = env.get_template("donnees.c")
+        rendu_final_c = template.render(
+            donnees=donnees.get('donnees', []),
+            date=datetime.now().strftime("%d/%m/%Y")
+        )
+        chemin_complet_c = os.path.join(output_dir, "donnees.c")
+        with open(chemin_complet_c, "w", encoding="utf-8") as f:
+            f.write(rendu_final_c)
+
+    except Exception as e:
+        print(f"Erreur lors de la génération Jinja2 : {e}")
 
 if __name__ == "__main__":
     fichier_cible = "structure.json"
@@ -58,6 +110,9 @@ if __name__ == "__main__":
         print("JSON extrait avec succès.")
         
         generer_fichier_types(resultat)
+        generer_fichier_constantes(resultat)
+        generer_fichier_donnees(resultat)
+
         
     except (FileNotFoundError, ValueError, IOError) as e:
         print(f"STOP : {e}")

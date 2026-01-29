@@ -29,6 +29,34 @@
             "commentaire" : "Entier non signé 32 bits"
         },
         {
+            "nom" : "numero_trame_t",
+            "type" : "atom",
+            "declaration" : "v_uint8_t",
+            "domaine" : "1..100",
+            "commentaire" : "Entier non signé 8 bits pour le numéro de trame"
+        },
+        {
+            "nom" : "vitesse_t",
+            "type" : "atom",
+            "declaration" : "v_uint8_t",
+            "domaine" : "0..255",
+            "commentaire" : "Entier non signé 8 bits pour la vitesse"
+        },
+        {
+            "nom" : "niveau_reservoir_t",
+            "type" : "atom",
+            "declaration" : "v_uint8_t",
+            "domaine" : "0..40",
+            "commentaire" : "Entier non signé 8 bits pour le réservoir"
+        },
+        {
+            "nom" : "regime_trmin_t",
+            "type" : "atom",
+            "declaration" : "v_uint32_t",
+            "domaine" : "0..10000",
+            "commentaire" : "Entier non signé 32 bits pour les tours/minutes"
+        },
+        {
             "nom" : "enum_probleme_chassis_t",
             "type" : "enum",
             "declaration" : [
@@ -133,6 +161,7 @@
                     "commentaire": "Clignotant gauche"
                 }
             ],
+            "domaine" : "0..5",
             "commentaire": "Identifiant du message BCGV vers BGF"
         }
     ],
@@ -147,13 +176,13 @@
         { "id" : 7, "nom" : "commande_essuie_glace", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Commande essuie-glaces" },
         { "id" : 8, "nom" : "commande_lave_glace", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Commande lave-glace" },
         
-        { "id" : 9, "nom" : "numero_de_trame", "type" : "v_uint8_t", "dimension" : "1", "init" : "0", "commentaire" : "Numéro de trame UDP 100ms" },
+        { "id" : 9, "nom" : "numero_de_trame", "type" : "numero_trame_t", "dimension" : "1", "init" : "0", "commentaire" : "Numéro de trame UDP 100ms" },
         { "id" : 10, "nom" : "kilometrage", "type" : "v_uint32_t", "dimension" : "1", "init" : "0", "commentaire" : "Kilométrage (km)" },
-        { "id" : 11, "nom" : "vitesse", "type" : "v_uint8_t", "dimension" : "1", "init" : "0", "commentaire" : "Vitesse (km/h)" },
+        { "id" : 11, "nom" : "vitesse", "type" : "vitesse_t", "dimension" : "1", "init" : "0", "commentaire" : "Vitesse (km/h)" },
         { "id" : 12, "nom" : "probleme_chassis", "type" : "enum_probleme_chassis_t", "dimension" : "1", "init" : "0", "commentaire" : "Problème châssis (0x0 aucun, 0x1 pneus, 0x2 freins)" },
         { "id" : 13, "nom" : "probleme_moteur", "type" : "enum_probleme_moteur_t", "dimension" : "1", "init" : "0", "commentaire" : "Problèmes moteur (0x0 aucun, 0x1 pression, 0x2 LDR, 0x4 huile)" },
-        { "id" : 14, "nom" : "niveau_reservoir", "type" : "v_uint8_t", "dimension" : "1", "init" : "0", "commentaire" : "Niveau réservoir (litres), max 40" },
-        { "id" : 15, "nom" : "regime_trmin", "type" : "v_uint32_t", "dimension" : "1", "init" : "0", "commentaire" : "Tours/minute, max 10000" },
+        { "id" : 14, "nom" : "niveau_reservoir", "type" : "niveau_reservoir_t", "dimension" : "1", "init" : "0", "commentaire" : "Niveau réservoir (litres), max 40" },
+        { "id" : 15, "nom" : "regime_trmin", "type" : "regime_trmin_t", "dimension" : "1", "init" : "0", "commentaire" : "Tours/minute, max 10000" },
         { "id" : 16, "nom" : "probleme_batterie", "type" : "enum_probleme_batterie_t", "dimension" : "1", "init" : "0", "commentaire" : "Problèmes batterie (0x0 aucun, 0x1 déchargée, 0x2 panne)" },
         { "id" : 17, "nom" : "CRC8", "type" : "v_uint8_t", "dimension" : "1", "init" : "0", "commentaire" : "CRC8 reçus" },
         
