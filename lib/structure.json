@@ -208,7 +208,9 @@
         { "id" : 17, "nom" : "CRC8", "type" : "v_uint8_t", "dimension" : "1", "init" : "0", "commentaire" : "CRC8 reçus" },
         
         { "id" : 18, "nom" : "id_message", "type" : "enum_id_message_feu_t", "dimension" : "1", "init" : "0", "commentaire" : "ID du message pour la trame BCGV vers BGF" },
-        { "id" : 19, "nom" : "activation_feu", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Etat actuel du feu" }
+        { "id" : 19, "nom" : "activation_feu", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Etat actuel du feu" },
+
+        { "id" : 20, "nom" : "aquittement", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Acquittement d'un message" }
     ]
     
 }
