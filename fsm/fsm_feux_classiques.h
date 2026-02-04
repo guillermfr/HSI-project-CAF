@@ -17,6 +17,8 @@
 #ifndef FSM_C_H_
 #define FSM_C_H_
 
+#include "../lib/output/types.h"
+#include "../lib/output/donnees.h"
 
 static int callback_initialisation(void);
 

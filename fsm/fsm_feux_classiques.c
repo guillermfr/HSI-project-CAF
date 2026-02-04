@@ -3,7 +3,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <time.h>
 #include "fsm_feux_classiques.h"
+
+time_t g_allumes_start_ms = 0;
 
 /* States */
 typedef enum {
@@ -36,6 +39,7 @@ static int callback_initialisation(void) {
 
 static int callback_allumer_feux(void) {
     printf("[FSM] -> ALLUMER FEUX\n");
+    g_allumes_start_ms = time(NULL); 
     return 0;
 }
 
@@ -91,55 +95,38 @@ int get_next_event(int current_state)
 {
     int event = EV_NONE;
 
-    /* Here, you can get the parameters of your FSM */
+    boolean_t commande_feux_position = get_commande_feux_position();
+    boolean_t commande_feux_croisement = get_commande_feux_croisement();
+    boolean_t commande_feux_route = get_commande_feux_route();
 
-    /* Build all the events */
-
-    /* Example code : 
-    if (PARAM1 == ...) {
-        event = EV_EVENT1
+    boolean_t commande_feux_any = (commande_feux_position == 1)
+                                 || (commande_feux_croisement == 1)
+                                 || (commande_feux_route == 1);
+    
+    if(current_state == ST_INIT) {
+        event = EV_INIT;
     }
-    else if (PARAM2 == ... && PARAM3 == ...) {
-        event = EV_EVENT2
+    else if(commande_feux_any == 0) {
+        event = EV_CMD_0;
     }
-    ...
-    */
-    return event;
-}
-
-
-
-/* ========= Construction événement (selon cmd/ack/timeout) ========= */
-static fsm_event_t get_next_event(fsm_state_t state)
-{
-    const int cmd = read_cmd();
-    const int ack = read_ack();
-
-    /* cmd=0 prioritaire : on coupe tout */
-    if (cmd == 0) {
-        return EV_CMD_0;
-    }
-
-    /* cmd=1 */
-    if (cmd == 1) {
-        /* en ALLUMES on attend l'ack, sinon on reste stable */
-        if (state == ST_ALLUMES) {
+    else if (commande_feux_any == 1) {
+        
+        if (get_activation_feu() == 1) {
+            // TODO: ajouter le ack à la structure de données globale ? et la récupérer avec un getter ? ou alors revoir la Q7 ?
             if (ack) {
-                return EV_ACK_RECU;
+                return EV_ACQUITTEMENT_RECU;
             }
-            /* timeout 1s */
-            uint32_t elapsed = now_ms() - g_allumes_start_ms;
-            if (elapsed >= 1000u) {
-                return EV_ACK_TIMEOUT;
+            
+            double elapsed = difftime(time(NULL), g_allumes_start_ms);
+            if (elapsed >= 1u) {
+                return EV_ACQUITTEMENT_EXPIRE;
             }
         }
         return EV_CMD_1;
     }
-
-    return EV_NONE;
+    
+    return event;
 }
-
-
 
 int main(void)
 {
