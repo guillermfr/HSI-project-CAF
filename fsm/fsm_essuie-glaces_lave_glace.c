@@ -13,29 +13,64 @@
 
 /* States */
 typedef enum {
-    ST_ANY = -1,                            /* Any state */
-    ST_INIT = 0,                            /* Init state */
-    ST_STATE1 = 1,
-    ST_STATE2 = 2,
-    ST_STATE3 = 3,
-    ST_STATE4 = 4,
-    ST_TERM = 255                           /* Final state */
+    ST_ANY = -1,                            /* Any state (joker, transition globale) */
+    ST_INIT = 0,                           /* État initial avant initialisation de la FSM */
+    ST_ETEINTS = 1,                         /* État initial : essuie-glace et lave-glace éteints */
+    ST_ESSUIE_GLACE_ACTIVES = 2,             /* Essuie-glace activé seul */
+    ST_ESSUIE_GLACE_LAVE_GLACE_ACTIVES = 3,  /* Essuie-glace et lave-glace activés simultanément */
+    ST_ETEINDRE_TIMER_ESSUIE_GLACE_LAVE_GLACE_ACTIVES = 4, /* Timer Lave-glace et Essuie-glace activé seul */
+    ST_TERM = 255                           /* État final (non utilisé en fonctionnement normal) */
 } fsm_state_t;
+
 
 /* Events */
 typedef enum {
-    EV_ANY = -1,                            /* Any event */
-    EV_NONE = 0,                            /* No event */
-    EV_EVENT1 = 1,
-    EV_EVENT2 = 2,
-    EV_ERR = 255                            /* Error event */
+    EV_ANY = -1,                            /* Any event (joker, transition globale) */
+    EV_NONE = 0,                            /* Aucun événement détecté */
+
+    EV_CMD_EG_0 = 1,                        /* Commande essuie-glace = 0 (OFF) */
+    EV_CMD_LG_0 = 2,                        /* Commande lave-glace = 0 (OFF) */
+
+    EV_CMD_EG_1 = 3,                        /* Commande essuie-glace = 1 (ON) */
+    EV_CMD_LG_1 = 4,                        /* Commande lave-glace = 1 (ON) */
+
+    EV_TEMPS_INFERIEUR_2 = 5,               /* Temps écoulé < 2 secondes */
+    EV_TEMPS_SUPERIEUR_2 = 6,               /* Temps écoulé >= 2 secondes */
+    EV_INIT = 7,                           /* Événement d’initialisation */
+
+    EV_ERR = 255                            /* Événement d’erreur */
 } fsm_event_t;
 
+
+
+
 /* Callback functions called on transitions */
-static int callback1 (void) { ... };
-static int callback2 (void) { ... };
-static int callback3 (void) { ... };
-static int FsmError(void) { ... };
+
+static int callback_initialisation(void) {
+    printf("[FSM] -> INITIALISATION : essuie-glace et lave-glace éteints\n");
+    return 0;
+}
+
+static int callback_allumer_essuie_glace(void) {
+    printf("[FSM] -> ESSUIE-GLACE ACTIVÉ\n");
+    return 0;
+}
+
+static int callback_eteindre_tout(void) {
+    printf("[FSM] -> ESSUIE-GLACE ETEINDRE\n");
+    return 0;
+}
+
+static int callback_allumer_essuie_glace_lave_glace(void) {
+    printf("[FSM] -> ESSUIE-GLACE + LAVE-GLACE ACTIVÉS\n");
+    return 0;
+}
+
+static int callback_eteindre_timer_essuie_glace_lave_glace(void) {
+    printf("[FSM] -> ARRÊT TEMPORISÉ : essuie-glace maintenu après lave-glace\n");
+    return 0;
+}
+
 
 /* Transition structure */
 typedef struct {
@@ -45,17 +80,33 @@ typedef struct {
     int next_state;
 } tTransition;
 
-/* Transition table */
+/* ================== Transition table (diagramme) ================== */
 tTransition trans[] = {
-    /* These are examples */
-    { ST_INIT, EV_EVENT1, &callback1, ST_STATE1},
-    { ST_INIT, EV_EVENT2, &callback2, ST_STATE3},
-    { ST_STATE2, EV_NONE, &callback3, ST_STATE4},
-    { ST_STATE3, EV_EVENT1, &callback1, ST_STATE1},
-    { ST_STATE4, EV_ANY, NULL, ST_STATE2},
 
-    { ST_ANY, EV_ERR, &FsmError, ST_TERM}
+    /* Initialisation */
+    {ST_ETEINTS, EV_INIT, &callback_initialisation, ST_ETEINTS},
+    /* ---- TOUT ETEINTS ---- */
+    { ST_ETEINTS, EV_CMD_LG_1, &callback_allumer_essuie_glace_lave_glace, ST_ESSUIE_GLACE_LAVE_GLACE_ACTIVES },
+    { ST_ETEINTS, EV_CMD_EG_1, &callback_allumer_essuie_glace,ST_ESSUIE_GLACE_ACTIVES},
+    { ST_ETEINTS, EV_CMD_EG_0 & EV_CMD_LG_0, &callback_eteindre_tout, ST_ETEINTS ,
+
+    /* ---- ESSUIE-GLACES ACTIVES ---- */
+    
+    {ST_ESSUIE_GLACE_ACTIVES, EV_CMD_LG_1, &callback_allumer_essuie_glace_lave_glace, ST_ESSUIE_GLACE_LAVE_GLACE_ACTIVES },
+    {ST_ESSUIE_GLACE_ACTIVES, EV_CMD_EG_0, &callback_eteindre_tout,ST_ETEINTS},
+    {ST_ESSUIE_GLACE_ACTIVES, EV_CMD_EG_1, &callback_allumer_essuie_glace, ST_ESSUIE_GLACE_ACTIVES },
+
+    /* ---- LAVE + ESSUIE ACTIVES ---- */
+    { ST_ESSUIE_GLACE_LAVE_GLACE_ACTIVES, EV_CMD_LG_1,  &callback_allumer_essuie_glace_lave_glace, ST_ESSUIE_GLACE_LAVE_GLACE_ACTIVES },
+    { ST_ESSUIE_GLACE_LAVE_GLACE_ACTIVES, EV_CMD_LG_0, &callback_eteindre_timer_essuie_glace_lave_glace, ST_ETEINDRE_TIMER_ESSUIE_GLACE_LAVE_GLACE_ACTIVES },
+
+    /* ---- TIMER EG&LG ETEINTS ---- */
+    { ST_ETEINDRE_TIMER_ESSUIE_GLACE_LAVE_GLACE_ACTIVES, EV_CMD_LG_1,  &callback_allumer_essuie_glace_lave_glace, ST_ESSUIE_GLACE_LAVE_GLACE_ACTIVES },
+    { ST_ETEINDRE_TIMER_ESSUIE_GLACE_LAVE_GLACE_ACTIVES,EV_TEMPS_INFERIEUR_2,  &callback_eteindre_timer_essuie_glace_lave_glace,                              ST_ETEINDRE_TIMER_ESSUIE_GLACE_LAVE_GLACE_ACTIVES },
+    { ST_ETEINDRE_TIMER_ESSUIE_GLACE_LAVE_GLACE_ACTIVES, EV_TEMPS_SUPERIEUR_2,   &callback_eteindre_timer_essuie_glace_lave_glace,              ST_ETEINTS },
 };
+
+
 
 #define TRANS_COUNT (sizeof(trans)/sizeof(*trans))
 

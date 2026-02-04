@@ -52,7 +52,7 @@ typedef enum {
 static int callback_initialisation(void) {
     printf("[FSM] -> INITIALISATION\n");
     return 0;
-}
+}   
 
 static int callback_allumer_feux(void) {
     printf("[FSM] -> ALLUMER FEUX\n");
