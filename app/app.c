@@ -80,7 +80,6 @@ int main(void) {
         if(errorCode == DRV_SUCCESS) {
             // Décodage de la trame reçue
             decoder_trame_udp(udpFrame);
-            printf("\n");
         }
         else if(errorCode == DRV_ERROR) {
             printf("Erreur lors de la lecture de la trame UDP\n");
