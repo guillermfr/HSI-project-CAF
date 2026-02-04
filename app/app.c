@@ -9,40 +9,40 @@
 #include "app.h"
 
 void decoder_trame_udp(v_uint8_t *udpFrame) {
-    
-    printf("Numero de trame: %u\n", udpFrame[0]); // 1 octet
+    set_numero_de_trame(udpFrame[0]); // 1 octet
+
 
     v_uint32_t km = ((v_uint32_t)udpFrame[1] << 24) | // 4 octets, Big Endian
                     ((v_uint32_t)udpFrame[2] << 16) |
                     ((v_uint32_t)udpFrame[3] << 8)  |
                     ((v_uint32_t)udpFrame[4]);
-    printf("Kilometrage: %u km\n", km);
+    set_kilometrage(km);
 
-    printf("Vitesse: %u km/h\n", udpFrame[5]); // 1 octet
-    printf("Probleme Chassis: %u\n", udpFrame[6]); // 1 octet
-    printf("Probleme Moteur: %u\n", udpFrame[7]); // 1 octet
-    printf("Niveau Reservoir: %u L\n", udpFrame[8]); // 1 octet
+    set_vitesse(udpFrame[5]); // 1 octet
+    set_probleme_chassis(udpFrame[6]); // 1 octet
+    sey_probleme_moteur(udpFrame[7]); // 1 octet
+    set_niveau_reservoir(udpFrame[8]); // 1 octet
 
     v_uint32_t rpm = ((v_uint32_t)udpFrame[9] << 24) | // 4 octets, Big Endian
                      ((v_uint32_t)udpFrame[10] << 16) |
                      ((v_uint32_t)udpFrame[11] << 8)  |
                      ((v_uint32_t)udpFrame[12]);
-    printf("Regime tr/min: %u\n", rpm);
+    set_regime_trmin(rpm);
 
-    printf("Probleme Batterie: %u\n", udpFrame[13]); // 1 octet
-    printf("CRC8: %u\n", udpFrame[14]); // 1 octet
+    set_probleme_batterie(udpFrame[13]); // 1 octet
+    set_crc8(udpFrame[14]); // 1 octet
 }
 
 
 void decoder_trame_serie(v_uint8_t serialFrame) {
-    printf("Cmd Warning: %u\n", (serialFrame >> 7) & 0x01);
-    printf("Cmd Feux de position: %u\n", (serialFrame >> 6) & 0x01);
-    printf("Cmd Feux de croisement: %u\n", (serialFrame >> 5) & 0x01);
-    printf("Cmd Feux de route: %u\n", (serialFrame >> 4) & 0x01);
-    printf("Cmd Clignotant droit: %u\n", (serialFrame >> 3) & 0x01);
-    printf("Cmd Clignotant gauche: %u\n", (serialFrame >> 2) & 0x01);
-    printf("Cmd Essuie-glaces: %u\n", (serialFrame >> 1) & 0x01);
-    printf("Cmd Lave glace: %u\n", (serialFrame >> 0) & 0x01);
+    set_cmd_warning((serialFrame >> 7) & 0x01); // 1 bit
+    set_cmd_feux_position((serialFrame >> 6) & 0x01); // 1 bit
+    set_cmd_feux_croisement((serialFrame >> 5) & 0x01); // 1 bit
+    set_cmd_feux_route((serialFrame >> 4) & 0x01); // 1 bit
+    set_cmd_clignotant_droit((serialFrame >> 3) & 0x01); // 1 bit
+    set_cmd_clignotant_gauche((serialFrame >> 2) & 0x01); // 1 bit
+    set_cmd_essuie_glaces((serialFrame >> 1) & 0x01); // 1 bit
+    set_cmd_lave_glace((serialFrame >> 0) & 0x01); // 1 bit
 }
 
 /**
