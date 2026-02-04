@@ -1,0 +1,22 @@
+# --- Informations sur le Projet ---
+PROJECT_NAME           = "Projet HSI - CAF"
+PROJECT_NUMBER         = 1.0
+OUTPUT_DIRECTORY       = doc
+CREATE_SUBDIRECTORIES  = NO
+OUTPUT_LANGUAGE        = French
+
+INPUT                  = . \
+                         lib \
+                         driver
+
+RECURSIVE              = YES
+
+FILE_PATTERNS          = *.c *.h *.a *.py
+
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+GENERATE_LATEX         = NO

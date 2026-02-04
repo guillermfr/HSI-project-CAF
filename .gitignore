@@ -8,3 +8,7 @@ lib/output/
 
 #Application
 app/app
+
+
+#Documentation
+doc/
