@@ -20,7 +20,7 @@ void decoder_trame_udp(v_uint8_t *udpFrame) {
 
     set_vitesse(udpFrame[5]); // 1 octet
     set_probleme_chassis(udpFrame[6]); // 1 octet
-    sey_probleme_moteur(udpFrame[7]); // 1 octet
+    set_probleme_moteur(udpFrame[7]); // 1 octet
     set_niveau_reservoir(udpFrame[8]); // 1 octet
 
     v_uint32_t rpm = ((v_uint32_t)udpFrame[9] << 24) | // 4 octets, Big Endian
@@ -30,19 +30,19 @@ void decoder_trame_udp(v_uint8_t *udpFrame) {
     set_regime_trmin(rpm);
 
     set_probleme_batterie(udpFrame[13]); // 1 octet
-    set_crc8(udpFrame[14]); // 1 octet
+    set_CRC8(udpFrame[14]); // 1 octet
 }
 
 
 void decoder_trame_serie(v_uint8_t serialFrame) {
-    set_cmd_warning((serialFrame >> 7) & 0x01); // 1 bit
-    set_cmd_feux_position((serialFrame >> 6) & 0x01); // 1 bit
-    set_cmd_feux_croisement((serialFrame >> 5) & 0x01); // 1 bit
-    set_cmd_feux_route((serialFrame >> 4) & 0x01); // 1 bit
-    set_cmd_clignotant_droit((serialFrame >> 3) & 0x01); // 1 bit
-    set_cmd_clignotant_gauche((serialFrame >> 2) & 0x01); // 1 bit
-    set_cmd_essuie_glaces((serialFrame >> 1) & 0x01); // 1 bit
-    set_cmd_lave_glace((serialFrame >> 0) & 0x01); // 1 bit
+    set_commande_warning((serialFrame >> 7) & 0x01); // 1 bit
+    set_commande_feux_position((serialFrame >> 6) & 0x01); // 1 bit
+    set_commande_feux_croisement((serialFrame >> 5) & 0x01); // 1 bit
+    set_commande_feux_route((serialFrame >> 4) & 0x01); // 1 bit
+    set_commande_clignotant_droit((serialFrame >> 3) & 0x01); // 1 bit
+    set_commande_clignotant_gauche((serialFrame >> 2) & 0x01); // 1 bit
+    set_commande_essuie_glace((serialFrame >> 1) & 0x01); // 1 bit
+    set_commande_lave_glace((serialFrame >> 0) & 0x01); // 1 bit
 }
 
 /**
