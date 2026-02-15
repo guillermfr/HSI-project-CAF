@@ -25,4 +25,12 @@ void decoder_trame_udp(v_uint8_t *udpFrame);
  */
 void decoder_trame_serie(v_uint8_t serialFrame);
 
+
+/**
+ * @brief Encode les données applicatives dans une trame UDP à envoyer au MUX.
+ * 
+ * @param udpFrame Le buffer de 10 octets à remplir avec la trame UDP à envoyer.
+ */
+void encoder_trame_udp(uint8_t* udpFrame);
+
 #endif /* APP_H */

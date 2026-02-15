@@ -34,6 +34,72 @@ void decoder_trame_udp(v_uint8_t *udpFrame) {
 }
 
 
+void encoder_trame_udp(uint8_t* udpFrame) {
+    for (int i = 0; i < DRV_UDP_200MS_FRAME_SIZE; i++) {
+        udpFrame[i] = 0;
+    }
+
+    // Octet 0 (MSB)
+    // Bit 7: Voyant feux de position
+    if (get_commande_feux_position()) udpFrame[0] |= (1 << 7);
+    // Bit 6: Voyant feux de croisement
+    if (get_commande_feux_croisement()) udpFrame[0] |= (1 << 6);
+    // Bit 5: Voyant feux de route
+    if (get_commande_feux_route()) udpFrame[0] |= (1 << 5);
+    // Bit 4: Voyant essence (<= 5%)
+    // 5% de 40L = 2L
+    if (get_niveau_reservoir() <= 2) udpFrame[0] |= (1 << 4);
+    // Bit 3: Voyant défaut moteur
+    if (get_probleme_moteur() != ENUM_PROBLEME_MOTEUR_T_AUCUN) udpFrame[0] |= (1 << 3);
+    // Bit 2: Voyant pression pneus
+    if (get_probleme_chassis() & ENUM_PROBLEME_CHASSIS_T_PRESSION_PNEUS) udpFrame[0] |= (1 << 2);
+    // Bit 1: Inutilisé
+    // Bit 0: Voyant batterie déchargée
+    if (get_probleme_batterie() & ENUM_PROBLEME_BATTERIE_T_DECHARGEE) udpFrame[0] |= (1 << 0);
+
+    // Octet 1
+    // Bit 7: Voyant Warnings
+    if (get_commande_warning()) udpFrame[1] |= (1 << 7);
+    // Bit 6: Voyant Panne batterie
+    if (get_probleme_batterie() & ENUM_PROBLEME_BATTERIE_T_PANNE) udpFrame[1] |= (1 << 6);
+    // Bit 5: Voyant Temp. LDR
+    if (get_probleme_moteur() & ENUM_PROBLEME_MOTEUR_T_TEMPERATURE_LDR) udpFrame[1] |= (1 << 5);
+    // Bit 4: Voyant pression moteur
+    if (get_probleme_moteur() & ENUM_PROBLEME_MOTEUR_T_DEFAUT_PRESSION) udpFrame[1] |= (1 << 4);
+    // Bit 3: Voyant surchauffe huile
+    if (get_probleme_moteur() & ENUM_PROBLEME_MOTEUR_T_SURCHAUFFE_HUILE) udpFrame[1] |= (1 << 3);
+    // Bit 2: Voyant défaillance freins
+    if (get_probleme_chassis() & ENUM_PROBLEME_CHASSIS_T_DEFAILLANCE_FREINS) udpFrame[1] |= (1 << 2);
+    // Bit 1: Activation Essuie glaces
+    if (get_commande_essuie_glace()) udpFrame[1] |= (1 << 1);
+    // Bit 0: Activation Lave glace
+    if (get_commande_lave_glace()) udpFrame[1] |= (1 << 0);
+
+    // Octets 2-5: Kilométrage , Big Endian 
+    v_uint32_t km = get_kilometrage();
+    udpFrame[2] = (km >> 24) & 0xFF;
+    udpFrame[3] = (km >> 16) & 0xFF;
+    udpFrame[4] = (km >> 8) & 0xFF;
+    udpFrame[5] = km & 0xFF;
+
+    // Octet 6: Vitesse
+    udpFrame[6] = get_vitesse();
+
+    // Octet 7: Niveau réservoir , en pourcent %
+    v_uint8_t niveau = get_niveau_reservoir();
+    if (niveau > 40) niveau = 40;
+    udpFrame[7] = (niveau * 100) / 40;
+
+    // Octets 8-9: RPM , Big Endian
+    v_uint32_t rpm = get_regime_trmin();
+    if (rpm >= 1000) {
+        rpm /= 10;
+    }
+    udpFrame[8] = (rpm >> 8) & 0xFF;
+    udpFrame[9] = rpm & 0xFF;
+}
+
+
 void decoder_trame_serie(v_uint8_t serialFrame) {
     set_commande_warning((serialFrame >> 7) & 0x01); // 1 bit
     set_commande_feux_position((serialFrame >> 6) & 0x01); // 1 bit
@@ -92,6 +158,14 @@ int main(void) {
                 decoder_trame_serie(serialData[i].frame[0]);
             }
         }
+
+
+        // Envoi au tableau de bord
+        v_uint8_t udpFrameToSend[DRV_UDP_200MS_FRAME_SIZE] = {0};
+        encoder_trame_udp(udpFrameToSend);
+
+        drv_write_udp_200ms(drvHandle, udpFrameToSend);
+
     }
     
     return 0;
