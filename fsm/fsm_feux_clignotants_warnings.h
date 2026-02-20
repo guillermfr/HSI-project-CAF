@@ -17,5 +17,21 @@
 #ifndef FSM_CW_H_
 #define FSM_CW_H_
 
+#include "../lib/output/types.h"
+#include "../lib/output/donnees.h"
+
+static int callback_initialisation(void);
+
+static int callback_enter_actives_allumes(void);
+
+static int callback_enter_actives_eteints(void);
+
+static int callback_enter_acquittes_allume(void);
+
+static int callback_enter_acquittes_eteint(void);
+
+static int callback_eteindre_feux(void);
+
+static int callback_erreur(void);
 
 #endif /* FIFO_H_ */

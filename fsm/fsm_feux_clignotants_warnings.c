@@ -10,6 +10,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
+#include "fsm_feux_clignotants_warnings.h"
+
+#include <time.h>
+
+static time_t g_ack_debut_s   = 0;
+static time_t g_clignotement_debut_s = 0;
 
 /* States */
 typedef enum {
@@ -19,7 +25,7 @@ typedef enum {
     ST_ETEINTS = 1,
     ST_ACTIVES_ALLUMES = 2,
     ST_ACQUITTES_ALLUME = 3,
-    ST_ACTIVE_ETEINTS = 4,
+    ST_ACTIVES_ETEINTS = 4,
     ST_ACQUITTES_ETEINT = 5,
     ST_ERREUR = 6,
 
@@ -42,36 +48,38 @@ typedef enum {
     EV_ERR = 255
 } fsm_event_t;
 
-/* Callback functions called on transitions */
-
 static int callback_initialisation(void) {
     printf("[FSM] -> INITIALISATION\n");
     return 0;
-}   
+}
 
-static int callback_allumer_feux(void) {
-    printf("[FSM] -> ALLUMER FEUX\n");
+static int callback_enter_actives_allumes(void) {
+    printf("[FSM] -> ACTIVES_ALLUMES (feux ON, attente ACK)\n");
+    g_ack_debut_s = time(NULL);
+
     return 0;
 }
 
-static int callback_clignotement_allumer(void){
-    printf("[FSM] -> ALLUMER FEUX EN PHASE DE CLIGNOTEMENT\n");
+static int callback_enter_actives_eteints(void) {
+    printf("[FSM] -> ACTIVES_ETEINTS (feux OFF, attente ACK)\n");
+    g_ack_debut_s = time(NULL);
     return 0;
 }
 
-static int callback_clignotement_eteindre(void){
-    printf("[FSM] -> ETEINDRE FEUX EN PHASE DE CLIGNOTEMENT\n");
+static int callback_enter_acquittes_allume(void) {
+    printf("[FSM] -> ACQUITTES_ALLUME (clignotement ON)\n");
+    g_clignotement_debut_s = time(NULL);
     return 0;
 }
 
-
-static int callback_acquitter(void) {
-    printf("[FSM] -> ACQUITTER\n");
+static int callback_enter_acquittes_eteint(void) {
+    printf("[FSM] -> ACQUITTES_ETEINT (clignotement OFF)\n");
+    g_clignotement_debut_s = time(NULL);
     return 0;
 }
 
 static int callback_eteindre_feux(void) {
-    printf("[FSM] -> ETEINDRE FEUX\n");
+    printf("[FSM] -> ETEINTS\n");
     return 0;
 }
 
@@ -79,8 +87,6 @@ static int callback_erreur(void) {
     printf("[FSM] -> ERREUR\n");
     return 0;
 }
-
-
 
 /* Transition structure */
 typedef struct {
@@ -93,37 +99,36 @@ typedef struct {
 /* Transition table */
 tTransition trans[] = {
 
-    /* Initialisation */
-    {ST_INIT, EV_INIT, &callback_initialisation, ST_ETEINTS},
-    
-    /* Eteints */
-    {ST_ETEINTS, EV_CMD_1, &callback_allumer_feux, ST_ACTIVES_ALLUMES},
-    {ST_ETEINTS, EV_CMD_0, &callback_eteindre_feux, ST_ETEINTS},
+    /* INITIALISATION */
+    { ST_INIT, EV_INIT, callback_initialisation, ST_ETEINTS },
 
-    /* ---- Activés et Allumés ---- */
-    {ST_ACTIVES_ALLUMES, EV_CMD_0, &callback_eteindre_feux, ST_ETEINTS},
-    {ST_ACTIVES_ALLUMES, EV_ACQUITTEMENT_EXPIRE, &callback_erreur, ST_ERREUR},
-    {ST_ACTIVES_ALLUMES, EV_ACQUITTEMENT_RECU, &callback_clignotement_allumer, ST_ACQUITTES_ALLUME},
-    {ST_ACTIVES_ALLUMES, EV_CMD_1, &callback_allumer_feux, ST_ACTIVES_ALLUMES},
-    
-    /* ---- ACQUITTES (ALLUME) ---- */
-    { ST_ACQUITTES_ALLUME, EV_CMD_0, &callback_eteindre_feux, ST_ETEINTS },
-    { ST_ACQUITTES_ALLUME, EV_TEMPS_1SEC, &callback_clignotement_eteindre, ST_ACTIVE_ETEINTS},
-    { ST_ACQUITTES_ALLUME, EV_CMD_1, &callback_acquitter, ST_ACQUITTES_ALLUME},
+    /* ETEINTS */
+    { ST_ETEINTS, EV_CMD_1, callback_enter_actives_allumes, ST_ACTIVES_ALLUMES },
+    { ST_ETEINTS, EV_CMD_0, NULL, ST_ETEINTS },
 
-    /* ---- ACTIVES & ETEINTS ---- */
-    { ST_ACTIVE_ETEINTS, EV_CMD_0, &callback_eteindre_feux, ST_ETEINTS },
-    { ST_ACTIVE_ETEINTS, EV_ACQUITTEMENT_RECU, &callback_clignotement_eteindre, ST_ACQUITTES_ETEINT },
-    { ST_ACTIVE_ETEINTS, EV_ACQUITTEMENT_EXPIRE, &callback_erreur, ST_ERREUR },
-    { ST_ACTIVE_ETEINTS, EV_CMD_1, &callback_clignotement_eteindre, ST_ACTIVE_ETEINTS },
+    /* ACTIVES_ALLUMES */
+    { ST_ACTIVES_ALLUMES, EV_CMD_0, callback_eteindre_feux, ST_ETEINTS },
+    { ST_ACTIVES_ALLUMES, EV_ACQUITTEMENT_RECU, callback_enter_acquittes_allume, ST_ACQUITTES_ALLUME },
+    { ST_ACTIVES_ALLUMES, EV_ACQUITTEMENT_EXPIRE, callback_erreur, ST_ERREUR },
+    { ST_ACTIVES_ALLUMES, EV_CMD_1, NULL, ST_ACTIVES_ALLUMES },
 
-    /* ---- ACQUITTES (ETEINT) ---- */
-    { ST_ACQUITTES_ETEINT, EV_CMD_0, &callback_eteindre_feux, ST_ETEINTS },
-    { ST_ACQUITTES_ETEINT, EV_TEMPS_1SEC, &callback_clignotement_allumer, ST_ACTIVES_ALLUMES },
-    { ST_ACQUITTES_ETEINT, EV_CMD_1, &callback_acquitter, ST_ACQUITTES_ETEINT },
-    
-    // TODO: voir si on garde
-    /* ---- ERREUR ---- */
+    /* ACQUITTES_ALLUME */
+    { ST_ACQUITTES_ALLUME, EV_CMD_0, callback_eteindre_feux, ST_ETEINTS },
+    { ST_ACQUITTES_ALLUME, EV_TEMPS_1SEC, callback_enter_actives_eteints, ST_ACTIVES_ETEINTS },
+    { ST_ACQUITTES_ALLUME, EV_CMD_1, NULL, ST_ACQUITTES_ALLUME },
+
+    /* ACTIVES_ETEINTS */
+    { ST_ACTIVES_ETEINTS, EV_CMD_0, callback_eteindre_feux, ST_ETEINTS },
+    { ST_ACTIVES_ETEINTS, EV_ACQUITTEMENT_RECU, callback_enter_acquittes_eteint, ST_ACQUITTES_ETEINT },
+    { ST_ACTIVES_ETEINTS, EV_ACQUITTEMENT_EXPIRE, callback_erreur, ST_ERREUR },
+    { ST_ACTIVES_ETEINTS, EV_CMD_1, NULL, ST_ACTIVES_ETEINTS },
+
+    /* ACQUITTES_ETEINT */
+    { ST_ACQUITTES_ETEINT, EV_CMD_0, callback_eteindre_feux, ST_ETEINTS },
+    { ST_ACQUITTES_ETEINT, EV_TEMPS_1SEC, callback_enter_actives_allumes, ST_ACTIVES_ALLUMES },
+    { ST_ACQUITTES_ETEINT, EV_CMD_1, NULL, ST_ACQUITTES_ETEINT },
+
+    /* ERREUR */
     { ST_ERREUR, EV_ERR, NULL, ST_ERREUR },
 };
 
@@ -131,22 +136,65 @@ tTransition trans[] = {
 
 int get_next_event(int current_state)
 {
-    int event = EV_NONE;
 
-    /* Here, you can get the parameters of your FSM */
-
-    /* Build all the events */
-
-    /* Example code : 
-    if (PARAM1 == ...) {
-        event = EV_EVENT1
+    if(current_state == ST_INIT) {
+        return EV_INIT;
     }
-    else if (PARAM2 == ... && PARAM3 == ...) {
-        event = EV_EVENT2
+
+    if(current_state == ST_ERREUR) {
+        return EV_NONE;
     }
-    ...
-    */
-    return event;
+
+    boolean_t commande_warning = get_commande_warning();
+    boolean_t commande_clignotant_droit = get_commande_clignotant_droit();
+    boolean_t commande_clignotant_gauche = get_commande_clignotant_gauche();
+
+    boolean_t commande_clignotant_any = (commande_warning == 1)
+                                    || (commande_clignotant_droit == 1)
+                                    || (commande_clignotant_gauche == 1);
+
+    if(commande_clignotant_any == 0) {
+        return EV_CMD_0;
+    }
+
+    switch (current_state) {
+
+        case ST_ACTIVES_ALLUMES:
+        case ST_ACTIVES_ETEINTS: {
+
+            if(get_acquittement_fsm_feux_clignotants_warnings() == 1) {
+                return EV_ACQUITTEMENT_RECU;
+            }
+
+            const double elapsed = difftime(time(NULL), g_ack_debut_s);
+            if(elapsed >= 1.0) {
+                return EV_ACQUITTEMENT_EXPIRE;
+            }
+
+            return EV_CMD_1;
+
+        }
+            
+        case ST_ACQUITTES_ALLUME:
+        case ST_ACQUITTES_ETEINT: {
+
+            const double elapsed = difftime(time(NULL), g_clignotement_debut_s);
+            if(elapsed >= 1.0) {
+                return EV_TEMPS_1SEC;
+            }
+
+            return EV_CMD_1;
+
+        }
+
+        case ST_ETEINTS:
+        default:
+            return EV_CMD_1;
+
+    }
+
+    return EV_NONE;
+
 }
 
 int main(void)
