@@ -1,10 +1,9 @@
 /**
- * \file        fsm.c
- * \author      Alexis Daley
- * \version     0.4
- * \date        08 otober 2023
- * \brief       This is a template file to create a Finite State Machine.
- * \details
+ * @file fsm_feux_clignotants_warnings.c
+ * @brief Programme de la final state machine pour les clignotants et warnings.
+ *
+ * Ce programme gère la final state machine pour le clignotant gauche, le clignotant droit et les warnings.
+ * Il reprend le schéma présent dans l'ennoncé.
  */
 
 #include <stdlib.h>
@@ -17,7 +16,9 @@
 static time_t g_ack_debut_s   = 0;
 static time_t g_clignotement_debut_s = 0;
 
-/* States */
+/**
+ * @brief Etats possibles de la machine d'états des clignotants et warnings.
+ */
 typedef enum {
     ST_ANY = -1,
     ST_INIT = 0,
@@ -32,7 +33,9 @@ typedef enum {
     ST_TERM = 255
 } fsm_state_t;
 
-/* Events */
+/**
+ * @brief Evenements possibles de la machine d'états des clignotants et warnings.
+ */
 typedef enum {
     EV_ANY = -1,
     EV_NONE = 0,
@@ -134,6 +137,14 @@ tTransition trans[] = {
 
 #define TRANS_COUNT (sizeof(trans)/sizeof(*trans))
 
+/**
+ * @brief Détermine le prochain événement à traiter.
+ *
+ * Lit les entrées de commande et retourne l'événement correspondant en fonction de l'état actuel.
+ *
+ * @param current_state État courant de la FSM.
+ * @return Evénement à traiter.
+ */
 int get_next_event(int current_state)
 {
 

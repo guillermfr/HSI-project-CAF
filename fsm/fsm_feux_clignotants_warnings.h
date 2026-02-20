@@ -1,17 +1,8 @@
 /**
- * \file        fifo.h
- * \author      Alexis Daley
- * \version     1.1
- * \date        02 february 2021
- * \brief       This files allow a user to create and manage a fifo buffer (circular buffer).
- * \details     This file gives the interfaces to be able to create and manage the fifo buffer.
- *              Concerning threads, the fifo is designed for one producer one consumer.
+ * @file fsm_feux_clignotants_warnings.h
+ * @brief Interface de la machine à états des clignotants et warning.
  *
- *              It implements following functions :
- *                  init : to init the fifo buffer
- *                  push : insert in the buffer
- *                  read : get fist data from the buffer
- *                  next : go to the next value, and read the new value
+ * Ce fichier déclare les fonctions nécessaires au pilotage de la FSM des clignotants et warnings.
  */
 
 #ifndef FSM_CW_H_
@@ -34,4 +25,14 @@ static int callback_eteindre_feux(void);
 
 static int callback_erreur(void);
 
-#endif /* FIFO_H_ */
+/**
+ * @brief Détermine le prochain événement à traiter.
+ *
+ * Lit les entrées de commande et retourne l'événement correspondant en fonction de l'état actuel.
+ *
+ * @param current_state État courant de la FSM.
+ * @return Evénement à traiter.
+ */
+int get_next_event(int current_state);
+
+#endif
