@@ -6,7 +6,7 @@
 #include <time.h>
 #include "fsm_feux_classiques.h"
 
-time_t g_allumes_start_ms = 0;
+time_t g_allumes_debut_ms = 0;
 
 /* States */
 typedef enum {
@@ -44,7 +44,7 @@ static int callback_initialisation(void) {
 
 static int callback_allumer_feux(void) {
     printf("[FSM] -> ALLUMER FEUX\n");
-    g_allumes_start_ms = time(NULL); 
+    g_allumes_debut_ms = time(NULL); 
     return 0;
 }
 
@@ -102,6 +102,10 @@ int get_next_event(int current_state)
         return EV_INIT;
     }
 
+    if(current_state == ST_ERREUR) {
+        return EV_NONE;
+    }
+
     boolean_t commande_feux_position = get_commande_feux_position();
     boolean_t commande_feux_croisement = get_commande_feux_croisement();
     boolean_t commande_feux_route = get_commande_feux_route();
@@ -109,10 +113,6 @@ int get_next_event(int current_state)
     boolean_t commande_feux_any = (commande_feux_position == 1)
                                  || (commande_feux_croisement == 1)
                                  || (commande_feux_route == 1);
-    
-    if(current_state == ST_ERREUR) {
-        return EV_NONE;
-    }
 
     if(commande_feux_any == 0) {
         return EV_CMD_0;
@@ -122,11 +122,11 @@ int get_next_event(int current_state)
 
         if(current_state == ST_ALLUMES) {
 
-            if(get_aquittement() == 1) {
+            if(get_acquittement_fsm_feux_classiques == 1) {
                 return EV_ACQUITTEMENT_RECU;
             }
 
-            double elapsed = difftime(time(NULL), g_allumes_start_ms);
+            double elapsed = difftime(time(NULL), g_allumes_debut_ms);
             if (elapsed >= 1u) {
                 return EV_ACQUITTEMENT_EXPIRE;
             }
