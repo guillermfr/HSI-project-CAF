@@ -1,4 +1,10 @@
-//TODO: doxygen
+/**
+ * @file fsm_feux_classiques.c
+ * @brief Programme de la final state machine pour les feux classiques.
+ *
+ * Ce programme gère la final state machine pour les 3 types de feu qui doivent être gérés.
+ * Il reprend le schéma présent dans l'ennoncé.
+ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -8,23 +14,27 @@
 
 time_t g_allumes_debut_ms = 0;
 
-/* States */
+/**
+ * @brief Etats possibles de la machine d'états des feux.
+ */
 typedef enum {
-    ST_ANY = -1,                            /* Any state */
-    ST_INIT = 0,                            /* Init state */
+    ST_ANY = -1,
+    ST_INIT = 0,
 
     ST_ETEINTS = 1,
     ST_ALLUMES = 2,
     ST_ACQUITTES = 3,
     ST_ERREUR = 4,
 
-    ST_TERM = 255                           /* Final state */
+    ST_TERM = 255
 } fsm_state_t;
 
-/* Events */
+/**
+ * @brief Evenements possibles de la machine d'états des feux.
+ */
 typedef enum {
-    EV_ANY = -1,                            /* Any event */
-    EV_NONE = 0,                            /* No event */
+    EV_ANY = -1,
+    EV_NONE = 0,
 
     EV_CMD_0 = 1,
     EV_CMD_1 = 2,
@@ -34,8 +44,6 @@ typedef enum {
 
     EV_ERR = 255
 } fsm_event_t;
-
-/* Callback functions called on transitions */
 
 static int callback_initialisation(void) {
     printf("[FSM] -> INITIALISATION\n");
@@ -95,6 +103,14 @@ tTransition trans[] = {
 
 #define TRANS_COUNT (sizeof(trans)/sizeof(*trans))
 
+/**
+ * @brief Détermine le prochain événement à traiter.
+ *
+ * Lit les entrées de commande et retourne l'événement correspondant en fonction de l'état actuel.
+ *
+ * @param current_state État courant de la FSM.
+ * @return Evénement à traiter.
+ */
 int get_next_event(int current_state)
 {
 
@@ -171,6 +187,4 @@ int main(void)
             }
         }
     }
-
-    return ret;
 }
