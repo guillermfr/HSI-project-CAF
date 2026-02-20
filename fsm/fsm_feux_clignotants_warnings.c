@@ -13,41 +13,36 @@
 
 /* States */
 typedef enum {
-    ST_ANY = -1,                 /* Any state */
+    ST_ANY = -1,
+    ST_INIT = 0,
 
-    ST_ETEINTS = 0,              /* Eteints */
-    ST_ACTIVES_ALLUMES = 1,          /* Activés & Allumés */
-    ST_ACQUITTES_ALLUME = 2,           /* Acquittés (voyant allumé) */
-    ST_ACTIVE_ETEINTS = 3,          /* Activés & Eteints */
-    ST_ACQUITTES_ETEINT = 4,           /* Acquittés (voyant éteint) */
-    ST_ERREUR = 5,               /* Erreur (atteints à jamais) */
+    ST_ETEINTS = 1,
+    ST_ACTIVES_ALLUMES = 2,
+    ST_ACQUITTES_ALLUME = 3,
+    ST_ACTIVE_ETEINTS = 4,
+    ST_ACQUITTES_ETEINT = 5,
+    ST_ERREUR = 6,
 
     ST_TERM = 255
 } fsm_state_t;
 
-
-
-
 /* Events */
 typedef enum {
-    EV_ANY = -1,                            /* Any event */
-    EV_NONE = 0,                            /* No event */
+    EV_ANY = -1,
+    EV_NONE = 0,
     
-    EV_CMD_0 = 1,                /* cmd == 0 */
-    EV_CMD_1 = 2,                /* cmd == 1 */
+    EV_CMD_0 = 1,
+    EV_CMD_1 = 2,
 
     EV_ACQUITTEMENT_RECU = 3,
     EV_ACQUITTEMENT_EXPIRE= 4,
     EV_INIT = 5,
-    EV_TEMPS_1SEC = 6    
-   
-    
+    EV_TEMPS_1SEC = 6,
+
+    EV_ERR = 255
 } fsm_event_t;
 
-
-
 /* Callback functions called on transitions */
-
 
 static int callback_initialisation(void) {
     printf("[FSM] -> INITIALISATION\n");
@@ -97,46 +92,40 @@ typedef struct {
 
 /* Transition table */
 tTransition trans[] = {
+
     /* Initialisation */
-    {ST_ETEINTS, EV_INIT, &callback_initialisation, ST_ETEINTS},
+    {ST_INIT, EV_INIT, &callback_initialisation, ST_ETEINTS},
     
     /* Eteints */
     {ST_ETEINTS, EV_CMD_1, &callback_allumer_feux, ST_ACTIVES_ALLUMES},
     {ST_ETEINTS, EV_CMD_0, &callback_eteindre_feux, ST_ETEINTS},
 
-
-
     /* ---- Activés et Allumés ---- */
-    {ST_ACTIVES_ALLUMES,EV_CMD_0,&callback_eteindre_feux,ST_ETEINTS},
-    {ST_ACTIVES_ALLUMES,EV_ACQUITTEMENT_EXPIRE,&callback_erreur,ST_ERREUR},
-    {ST_ACTIVES_ALLUMES,EV_ACQUITTEMENT_RECU,&callback_clignotement_allumer,ST_ACTIVES_ALLUMES},
+    {ST_ACTIVES_ALLUMES, EV_CMD_0, &callback_eteindre_feux, ST_ETEINTS},
+    {ST_ACTIVES_ALLUMES, EV_ACQUITTEMENT_EXPIRE, &callback_erreur, ST_ERREUR},
+    {ST_ACTIVES_ALLUMES, EV_ACQUITTEMENT_RECU, &callback_clignotement_allumer, ST_ACQUITTES_ALLUME},
     {ST_ACTIVES_ALLUMES, EV_CMD_1, &callback_allumer_feux, ST_ACTIVES_ALLUMES},
     
-  
     /* ---- ACQUITTES (ALLUME) ---- */
-    { ST_ACQUITTES_ALLUME,EV_CMD_0,&callback_eteindre_feux,ST_ETEINTS },
-    { ST_ACQUITTES_ALLUME,EV_TEMPS_1SEC,&callback_clignotement_eteindre,ST_ACTIVE_ETEINTS},  /* après 1 sec -> Actives & Eteints */
-    { ST_ACQUITTES_ALLUME,EV_CMD_1,&callback_acquitter,ST_ACQUITTES_ALLUME},   /* self-loop */
-
-
+    { ST_ACQUITTES_ALLUME, EV_CMD_0, &callback_eteindre_feux, ST_ETEINTS },
+    { ST_ACQUITTES_ALLUME, EV_TEMPS_1SEC, &callback_clignotement_eteindre, ST_ACTIVE_ETEINTS},
+    { ST_ACQUITTES_ALLUME, EV_CMD_1, &callback_acquitter, ST_ACQUITTES_ALLUME},
 
     /* ---- ACTIVES & ETEINTS ---- */
-     { ST_ACTIVE_ETEINTS, EV_CMD_0,      &callback_eteindre_feux,    ST_ETEINTS },
-    { ST_ACTIVE_ETEINTS, EV_ACQUITTEMENT_RECU,  &callback_clignotement_eteindre, ST_ACQUITTES_ETEINT },
-    { ST_ACTIVE_ETEINTS, EV_ACQUITTEMENT_EXPIRE, &callback_erreur,     ST_ERREUR },
-    { ST_ACTIVE_ETEINTS, EV_CMD_1,      &callback_clignotement_eteindre,  ST_ACTIVE_ETEINTS },  /* self-loop */
+    { ST_ACTIVE_ETEINTS, EV_CMD_0, &callback_eteindre_feux, ST_ETEINTS },
+    { ST_ACTIVE_ETEINTS, EV_ACQUITTEMENT_RECU, &callback_clignotement_eteindre, ST_ACQUITTES_ETEINT },
+    { ST_ACTIVE_ETEINTS, EV_ACQUITTEMENT_EXPIRE, &callback_erreur, ST_ERREUR },
+    { ST_ACTIVE_ETEINTS, EV_CMD_1, &callback_clignotement_eteindre, ST_ACTIVE_ETEINTS },
 
     /* ---- ACQUITTES (ETEINT) ---- */
-     { ST_ETEINTS,  EV_CMD_0,       &callback_eteindre_feux,    ST_ETEINTS },
-    { ST_ETEINTS,  EV_TEMPS_1SEC,    &callback_clignotement_allumer,ST_ACTIVES_ALLUMES },  /* après 1 sec -> Actives & Allumés */
-    { ST_ETEINTS,  EV_CMD_1,       &callback_acquitter,  ST_ETEINTS },   /* self-loop */
+    { ST_ACQUITTES_ETEINT, EV_CMD_0, &callback_eteindre_feux, ST_ETEINTS },
+    { ST_ACQUITTES_ETEINT, EV_TEMPS_1SEC, &callback_clignotement_allumer, ST_ACTIVES_ALLUMES },
+    { ST_ACQUITTES_ETEINT, EV_CMD_1, &callback_acquitter, ST_ACQUITTES_ETEINT },
     
-    /* ---- ERREUR (atteints à jamais) ---- */
-     { ST_ERREUR,      EV_ANY,         NULL,                ST_ERREUR },
+    // TODO: voir si on garde
+    /* ---- ERREUR ---- */
+    { ST_ERREUR, EV_ERR, NULL, ST_ERREUR },
 };
-
-
-
 
 #define TRANS_COUNT (sizeof(trans)/sizeof(*trans))
 
@@ -165,7 +154,7 @@ int main(void)
     int i = 0;
     int ret = 0; 
     int event = EV_NONE;
-   // int state = ST_INIT;
+    int state = ST_INIT;
     
     /* While FSM hasn't reach end state */
     while (state != ST_TERM) {

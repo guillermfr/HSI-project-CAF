@@ -12,10 +12,12 @@ time_t g_allumes_start_ms = 0;
 typedef enum {
     ST_ANY = -1,                            /* Any state */
     ST_INIT = 0,                            /* Init state */
+
     ST_ETEINTS = 1,
     ST_ALLUMES = 2,
     ST_ACQUITTES = 3,
     ST_ERREUR = 4,
+
     ST_TERM = 255                           /* Final state */
 } fsm_state_t;
 
@@ -23,6 +25,7 @@ typedef enum {
 typedef enum {
     EV_ANY = -1,                            /* Any event */
     EV_NONE = 0,                            /* No event */
+
     EV_CMD_0 = 1,
     EV_CMD_1 = 2,
     EV_ACQUITTEMENT_RECU = 3,
@@ -87,7 +90,6 @@ tTransition trans[] = {
     // TODO: voir si on garde
     // { ST_ANY, EV_ERR, &FsmError, ST_TERM}
 };
-
 
 #define TRANS_COUNT (sizeof(trans)/sizeof(*trans))
 
