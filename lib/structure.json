@@ -210,7 +210,9 @@
         { "id" : 18, "nom" : "id_message", "type" : "enum_id_message_feu_t", "dimension" : "1", "init" : "0", "commentaire" : "ID du message pour la trame BCGV vers BGF" },
         { "id" : 19, "nom" : "activation_feu", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Etat actuel du feu" },
 
-        { "id" : 20, "nom" : "aquittement", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Acquittement d'un message" }
+        { "id" : 20, "nom" : "acquittement_fsm_feux_classiques", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Acquittement d'un message pour la FSM des feux classiques" },
+        { "id" : 21, "nom" : "acquittement_fsm_feux_clignotants_warnings", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Acquittement d'un message pour la FSM des clignotants ou des warnings" },
+        { "id" : 22, "nom" : "acquittement_fsm_essuie_glaces_lave_glace", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Acquittement d'un message pour la FSM des essuie-glaces ou du lave glace" }
     ]
     
 }
