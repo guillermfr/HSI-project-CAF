@@ -30,7 +30,9 @@ typedef enum {
     EV_CMD_1 = 2,
     EV_ACQUITTEMENT_RECU = 3,
     EV_ACQUITTEMENT_EXPIRE= 4,
-    EV_INIT = 5
+    EV_INIT = 5,
+
+    EV_ERR = 255
 } fsm_event_t;
 
 /* Callback functions called on transitions */
@@ -81,21 +83,24 @@ tTransition trans[] = {
     {ST_ALLUMES, EV_CMD_0, &callback_eteindre_feux, ST_ETEINTS},
     {ST_ALLUMES, EV_ACQUITTEMENT_RECU, &callback_acquitter, ST_ACQUITTES},
     {ST_ALLUMES, EV_ACQUITTEMENT_EXPIRE, &callback_erreur, ST_ERREUR },
-    {ST_ALLUMES, EV_CMD_1, &callback_allumer_feux, ST_ALLUMES},
+    {ST_ALLUMES, EV_CMD_1, NULL, ST_ALLUMES},
 
     /*ACQUITTES*/
     {ST_ACQUITTES, EV_CMD_0, &callback_eteindre_feux, ST_ETEINTS},
     {ST_ACQUITTES, EV_CMD_1, &callback_acquitter, ST_ACQUITTES},
 
-    // TODO: voir si on garde
-    // { ST_ANY, EV_ERR, &FsmError, ST_TERM}
+    /*ERREUR*/
+    { ST_ANY, EV_ERR, &callback_erreur, ST_TERM}
 };
 
 #define TRANS_COUNT (sizeof(trans)/sizeof(*trans))
 
 int get_next_event(int current_state)
 {
-    int event = EV_NONE;
+
+    if(current_state == ST_INIT) {
+        return EV_INIT;
+    }
 
     boolean_t commande_feux_position = get_commande_feux_position();
     boolean_t commande_feux_croisement = get_commande_feux_croisement();
@@ -105,29 +110,35 @@ int get_next_event(int current_state)
                                  || (commande_feux_croisement == 1)
                                  || (commande_feux_route == 1);
     
-    if(current_state == ST_INIT) {
-        event = EV_INIT;
+    if(current_state == ST_ERREUR) {
+        return EV_NONE;
     }
-    else if(commande_feux_any == 0) {
-        event = EV_CMD_0;
+
+    if(commande_feux_any == 0) {
+        return EV_CMD_0;
     }
-    else if (commande_feux_any == 1) {
-        
-        if (get_activation_feu() == 1) {
-            // TODO: ajouter le ack à la structure de données globale ? et la récupérer avec un getter ? ou alors revoir la Q7 ?
-            if (ack) {
+
+    if(commande_feux_any == 1) {
+
+        if(current_state == ST_ALLUMES) {
+
+            if(get_aquittement() == 1) {
                 return EV_ACQUITTEMENT_RECU;
             }
-            
+
             double elapsed = difftime(time(NULL), g_allumes_start_ms);
             if (elapsed >= 1u) {
                 return EV_ACQUITTEMENT_EXPIRE;
             }
+
         }
-        return EV_CMD_1;
-    }
     
-    return event;
+        return EV_CMD_1;
+
+    }
+
+    return EV_NONE;
+
 }
 
 int main(void)
