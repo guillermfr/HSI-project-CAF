@@ -31,6 +31,14 @@ void decoder_trame_serie(v_uint8_t serialFrame);
  * 
  * @param udpFrame Le buffer de 10 octets à remplir avec la trame UDP à envoyer.
  */
-void encoder_trame_udp(uint8_t* udpFrame);
+void encoder_trame_udp(v_uint8_t* udpFrame);
+
+/**
+ * @brief Vérifie que le numéro de trame reçu correspond à celui attendu.
+ * 
+ * @param numeroRecu Le numéro de trame reçu.
+ * @param pTrameAttendue Pointeur vers le numéro de trame attendu (mis à jour si la vérification est réussie).
+ */
+void verifier_numero_de_trame(v_uint8_t numeroRecu, v_uint8_t *pTrameAttendue)
 
 #endif /* APP_H */

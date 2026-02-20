@@ -34,7 +34,7 @@ void decoder_trame_udp(v_uint8_t *udpFrame) {
 }
 
 
-void encoder_trame_udp(uint8_t* udpFrame) {
+void encoder_trame_udp(v_uint8_t* udpFrame) {
     for (int i = 0; i < DRV_UDP_200MS_FRAME_SIZE; i++) {
         udpFrame[i] = 0;
     }
@@ -111,6 +111,21 @@ void decoder_trame_serie(v_uint8_t serialFrame) {
     set_commande_lave_glace((serialFrame >> 0) & 0x01); // 1 bit
 }
 
+
+void verifier_numero_de_trame(v_uint8_t numeroRecu, v_uint8_t *pTrameAttendue) {
+    if (numeroRecu == 0) {
+        *pTrameAttendue = 1;
+        return;
+    }
+
+    // Vérification par rapport à la valeur pointée
+    if (numeroRecu != *pTrameAttendue) {
+        printf("[LOG] Problème séquence UDP : Reçu %d, Attendu %d\n", 
+                numeroRecu, *pTrameAttendue);
+    }
+    *pTrameAttendue = (numeroRecu % 100) + 1;
+}
+
 /**
  * @brief Point d'entrée du programme.
  *
@@ -120,52 +135,63 @@ void decoder_trame_serie(v_uint8_t serialFrame) {
  * @return int Code de retour du programme
  */
 int main(void) {
-    // TODO: changer le nom des variables pour que ce soit en français
-    v_int32_t drvHandle = 0;
-    v_uint8_t udpFrame[DRV_UDP_100MS_FRAME_SIZE];
-    serial_frame_t serialData[DRV_MAX_FRAMES];
-    v_uint32_t serialDataLen = 0;
-    v_int32_t errorCode = 0;
+    v_int32_t identifiant_driver = 0;
+    v_uint8_t trame_udp[DRV_UDP_100MS_FRAME_SIZE];
+    serial_frame_t donnees_serie[DRV_MAX_FRAMES];
+    v_uint32_t nb_trames_serie = 0;
+    v_int32_t code_erreur = 0;
+    v_uint8_t trame_udp_a_envoyer[DRV_UDP_200MS_FRAME_SIZE] = {0};
+    v_uint8_t prochaine_trame_attendue = 1;
+    v_int32_t compteur_cycle = 0;
 
-    drvHandle = drv_open();
+    // Initialisation
+    identifiant_driver = drv_open();
 
-    if(drvHandle == DRV_ERROR) {
+    if(identifiant_driver == DRV_ERROR) {
         printf("Erreur : impossible d'ouvrir le driver (DRV_ERROR)\n");
         return -1;
     }
-    else if(drvHandle == DRV_VER_MISMATCH) {
+    else if(identifiant_driver == DRV_VER_MISMATCH) {
         printf("Erreur : incompatibilité de version du driver (DRV_VER_MISMATCH)\n");
         return -1;
     }
 
     while(1) {
-        // TODO: revoir ordre des lectures
-        // LECTURE UDP
-        errorCode = drv_read_udp_100ms(drvHandle, udpFrame);
+        // Lecture de la trame UDP 100 ms
+        code_erreur = drv_read_udp_100ms(identifiant_driver, trame_udp);
 
-        if(errorCode == DRV_SUCCESS) {
-            // Décodage de la trame reçue
-            decoder_trame_udp(udpFrame);
+        if(code_erreur == DRV_SUCCESS) {
+            // Vérification et log si saut de trame
+            verifier_numero_de_trame(trame_udp[0], &prochaine_trame_attendue);
+            
+            // Décodage des données reçues
+            decoder_trame_udp(trame_udp);
         }
-        else if(errorCode == DRV_ERROR) {
-            printf("Erreur lors de la lecture de la trame UDP\n");
-        }
 
-        errorCode = drv_read_ser(drvHandle, serialData, &serialDataLen);
+        compteur_cycle++;
 
-        if (errorCode == DRV_SUCCESS && serialDataLen > 0) {
-            for(v_uint32_t i = 0; i < serialDataLen; i++) {
-                decoder_trame_serie(serialData[i].frame[0]);
+        // Lecture de la trame série 500 ms
+        if(compteur_cycle >= 5) {
+            code_erreur = drv_read_ser(identifiant_driver, donnees_serie, &nb_trames_serie);
+
+            if (code_erreur == DRV_SUCCESS && nb_trames_serie > 0) {
+                for(v_uint32_t i = 0; i < nb_trames_serie; i++) {
+                    decoder_trame_serie(donnees_serie[i].frame[0]);
+                }
             }
         }
 
+        // TODO : MACHINE D'ÉTAT
 
-        // Envoi au tableau de bord
-        v_uint8_t udpFrameToSend[DRV_UDP_200MS_FRAME_SIZE] = {0};
-        encoder_trame_udp(udpFrameToSend);
 
-        drv_write_udp_200ms(drvHandle, udpFrameToSend);
+        // Encodage et Envoi de la trame UDP
+        encoder_trame_udp(trame_udp_a_envoyer);
+        drv_write_udp_200ms(identifiant_driver, trame_udp_a_envoyer);
 
+        //TODO : Encodage et Ecriture de la trame série
+        if (compteur_cycle >= 5) {
+            compteur_cycle = 0;
+        }
     }
     
     return 0;
