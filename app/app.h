@@ -39,6 +39,6 @@ void encoder_trame_udp(v_uint8_t* udpFrame);
  * @param numeroRecu Le numéro de trame reçu.
  * @param pTrameAttendue Pointeur vers le numéro de trame attendu (mis à jour si la vérification est réussie).
  */
-void verifier_numero_de_trame(v_uint8_t numeroRecu, v_uint8_t *pTrameAttendue)
+void verifier_numero_de_trame(v_uint8_t numeroRecu, v_uint8_t *pTrameAttendue);
 
 #endif /* APP_H */

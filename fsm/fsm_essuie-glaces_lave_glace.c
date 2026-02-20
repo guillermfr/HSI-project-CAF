@@ -1,16 +1,13 @@
-/**
- * \file        fsm.c
- * \author      Alexis Daley
- * \version     0.4
- * \date        08 otober 2023
- * \brief       This is a template file to create a Finite State Machine.
- * \details
- */
+//TODO: doxygen
+//TODO: relire ce qui a été fait
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <time.h>
+#include "fsm_essuie-glaces_lave_glace.h"
 
+static time_t g_timer_post_lg_start_s = 0;
 /* States */
 typedef enum {
     ST_ANY = -1,
@@ -20,6 +17,7 @@ typedef enum {
     ST_ESSUIE_GLACE_ACTIVES = 2,
     ST_ESSUIE_GLACE_LAVE_GLACE_ACTIVES = 3,
     ST_ETEINDRE_TIMER_ESSUIE_GLACE_LAVE_GLACE_ACTIVES = 4,
+    ST_ERREUR = 5,
 
     ST_TERM = 255
 } fsm_state_t;
@@ -66,9 +64,14 @@ static int callback_allumer_essuie_glace_lave_glace(void) {
 
 static int callback_eteindre_timer_essuie_glace_lave_glace(void) {
     printf("[FSM] -> ARRÊT TEMPORISÉ : essuie-glace maintenu après lave-glace\n");
+   
     return 0;
 }
-
+static int callback_demarrer_timer_post_lave_glace(void) {
+    printf("[FSM] -> DEMARRER TIMER POST LAVE-GLACE (2s)\n");
+    g_timer_post_lg_start_s = time(NULL);
+    return 0;
+}
 
 /* Transition structure */
 typedef struct {
@@ -87,45 +90,68 @@ tTransition trans[] = {
     /* ---- TOUT ETEINTS ---- */
     { ST_ETEINTS, EV_CMD_LG_1, &callback_allumer_essuie_glace_lave_glace, ST_ESSUIE_GLACE_LAVE_GLACE_ACTIVES },
     { ST_ETEINTS, EV_CMD_EG_1, &callback_allumer_essuie_glace,ST_ESSUIE_GLACE_ACTIVES },
-    { ST_ETEINTS, EV_CMD_EG_0 & EV_CMD_LG_0, &callback_eteindre_tout, ST_ETEINTS },
+    { ST_ETEINTS, EV_CMD_EG_0, NULL, ST_ETEINTS }, 
+    { ST_ETEINTS, EV_CMD_LG_0, NULL, ST_ETEINTS },
 
     /* ---- ESSUIE-GLACES ACTIVES ---- */
     {ST_ESSUIE_GLACE_ACTIVES, EV_CMD_LG_1, &callback_allumer_essuie_glace_lave_glace, ST_ESSUIE_GLACE_LAVE_GLACE_ACTIVES },
     {ST_ESSUIE_GLACE_ACTIVES, EV_CMD_EG_0, &callback_eteindre_tout,ST_ETEINTS },
-    {ST_ESSUIE_GLACE_ACTIVES, EV_CMD_EG_1, &callback_allumer_essuie_glace, ST_ESSUIE_GLACE_ACTIVES },
+    {ST_ESSUIE_GLACE_ACTIVES, EV_CMD_EG_1, NULL, ST_ESSUIE_GLACE_ACTIVES },
 
     /* ---- LAVE + ESSUIE ACTIVES ---- */
-    { ST_ESSUIE_GLACE_LAVE_GLACE_ACTIVES, EV_CMD_LG_1, &callback_allumer_essuie_glace_lave_glace, ST_ESSUIE_GLACE_LAVE_GLACE_ACTIVES },
-    { ST_ESSUIE_GLACE_LAVE_GLACE_ACTIVES, EV_CMD_LG_0, &callback_eteindre_timer_essuie_glace_lave_glace, ST_ETEINDRE_TIMER_ESSUIE_GLACE_LAVE_GLACE_ACTIVES },
+    { ST_ESSUIE_GLACE_LAVE_GLACE_ACTIVES, EV_CMD_LG_1, NULL, ST_ESSUIE_GLACE_LAVE_GLACE_ACTIVES },
+    { ST_ESSUIE_GLACE_LAVE_GLACE_ACTIVES, EV_CMD_LG_0, callback_demarrer_timer_post_lave_glace, ST_ETEINDRE_TIMER_ESSUIE_GLACE_LAVE_GLACE_ACTIVES },
 
     /* ---- TIMER EG&LG ETEINTS ---- */
     { ST_ETEINDRE_TIMER_ESSUIE_GLACE_LAVE_GLACE_ACTIVES, EV_CMD_LG_1, &callback_allumer_essuie_glace_lave_glace, ST_ESSUIE_GLACE_LAVE_GLACE_ACTIVES },
-    { ST_ETEINDRE_TIMER_ESSUIE_GLACE_LAVE_GLACE_ACTIVES, EV_TEMPS_INFERIEUR_2, &callback_eteindre_timer_essuie_glace_lave_glace, ST_ETEINDRE_TIMER_ESSUIE_GLACE_LAVE_GLACE_ACTIVES },
+    
+    { ST_ETEINDRE_TIMER_ESSUIE_GLACE_LAVE_GLACE_ACTIVES, EV_TEMPS_INFERIEUR_2, NULL, ST_ETEINDRE_TIMER_ESSUIE_GLACE_LAVE_GLACE_ACTIVES },
     { ST_ETEINDRE_TIMER_ESSUIE_GLACE_LAVE_GLACE_ACTIVES, EV_TEMPS_SUPERIEUR_2, &callback_eteindre_timer_essuie_glace_lave_glace,              ST_ETEINTS },
 
-    // TODO: voir si on met etat erreur
+    /* ERREUR */
+    { ST_ERREUR, EV_ERR, NULL, ST_ERREUR },
 };
 
 #define TRANS_COUNT (sizeof(trans)/sizeof(*trans))
 
 int get_next_event(int current_state)
 {
-    int event = EV_NONE;
-
-    /* Here, you can get the parameters of your FSM */
-
-    /* Build all the events */
-
-    /* Example code : 
-    if (PARAM1 == ...) {
-        event = EV_EVENT1
+    if (current_state == ST_INIT) {
+        return EV_INIT;
     }
-    else if (PARAM2 == ... && PARAM3 == ...) {
-        event = EV_EVENT2
+
+    boolean_t cmd_eg = get_cmd_essuie_glace(); /* 0/1 */
+    boolean_t cmd_lg = get_cmd_lave_glace();   /* 0/1 */
+
+    /* Cas spécial : pour déclencher l'entrée dans l'état TIMER via EV_CMD_LG_0 */
+    if (current_state == ST_ESSUIE_GLACE_LAVE_GLACE_ACTIVES) {
+        if (cmd_lg == 1u) {
+            return EV_CMD_LG_1;
+        }
+        return EV_CMD_LG_0; /* cmd_lg retombe à 0 => transition vers TIMER dans ta table */
     }
-    ...
-    */
-    return event;
+
+    /* Priorité au lave-glace */
+    if (cmd_lg == 1u) {
+        return EV_CMD_LG_1;
+    }
+
+    /* Etat TIMER : uniquement le temps (conforme au schéma) */
+    if (current_state == ST_ETEINDRE_TIMER_ESSUIE_GLACE_LAVE_GLACE_ACTIVES) {
+        const double elapsed = difftime(time(NULL), g_timer_post_lg_start_s);
+        if (elapsed >= 2.0) {
+            return EV_TEMPS_SUPERIEUR_2;
+        }
+        return EV_TEMPS_INFERIEUR_2;
+    }
+
+    /* Hors Timer : essuie-glace */
+    if (cmd_eg == 1u) {
+        return EV_CMD_EG_1;
+    }
+
+    /* Tout à 0 */
+    return EV_CMD_EG_0;
 }
 
 int main(void)
