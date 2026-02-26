@@ -18,5 +18,14 @@
 #define {{ item.nom|upper }}_MAX ({{ limites[1] }})
 
 {% endfor %}
+/**
+ * @brief Valeur représentant une commande activée
+ */
+#define CMD_ACTIVEE 1u
+
+/**
+ * @brief Valeur représentant une commande éteinte
+ */
+#define CMD_ETEINTE 0u
 
 #endif /* DEFINE_H */
