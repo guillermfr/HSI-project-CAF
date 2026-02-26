@@ -51,11 +51,20 @@ typedef enum {
     EV_ERR = 255
 } fsm_event_t;
 
+/**
+ * @brief Callback appelé lors de la transition d'initialisation de la FSM.
+ */
 static int callback_initialisation(void) {
     printf("[FSM] -> INITIALISATION\n");
     return 0;
 }
 
+/**
+ * @brief Callback appelé lors de la transition où les clignotants passent de l'état éteints à activés et allumés.
+ * 
+ * Ce callback permet de récupérer le temps au moment de la transition afin de le réutiliser plus tard lors de la vérification de la durée de l'acquittement.
+ * 
+ */
 static int callback_enter_actives_allumes(void) {
     printf("[FSM] -> ACTIVES_ALLUMES (feux ON, attente ACK)\n");
     g_ack_debut_s = time(NULL);
@@ -63,29 +72,53 @@ static int callback_enter_actives_allumes(void) {
     return 0;
 }
 
+/**
+ * @brief Callback appelé lors de la transition où les clignotants passent de l'état éteints à activés et allumés.
+ * 
+ * Ce callback permet de récupérer le temps au moment de la transition afin de le réutiliser plus tard lors de la vérification de la durée de l'acquittement.
+ * 
+ */
 static int callback_enter_actives_eteints(void) {
     printf("[FSM] -> ACTIVES_ETEINTS (feux OFF, attente ACK)\n");
     g_ack_debut_s = time(NULL);
     return 0;
 }
 
+/**
+ * @brief Callback appelé lors de la transition où les clignotants passent de l'état activés et allumés à acquittés et allumés.
+ * 
+ * Ce callback permet de récupérer le temps au moment de la transition afin de le réutiliser plus tard lors de la vérification de la durée de l'acquittement.
+ * 
+ */
 static int callback_enter_acquittes_allume(void) {
     printf("[FSM] -> ACQUITTES_ALLUME (clignotement ON)\n");
     g_clignotement_debut_s = time(NULL);
     return 0;
 }
 
+/**
+ * @brief Callback appelé lors de la transition où les clignotants passent de l'état activés et éteints à l'état acquittés et éteints.
+ * 
+ * Ce callback permet de récupérer le temps au moment de la transition afin de le réutiliser plus tard lors de la vérification de la durée de l'acquittement.
+ * 
+ */
 static int callback_enter_acquittes_eteint(void) {
     printf("[FSM] -> ACQUITTES_ETEINT (clignotement OFF)\n");
     g_clignotement_debut_s = time(NULL);
     return 0;
 }
 
+/**
+ * @brief Callback appelé lors de la transition où les clignotants passent à l'état éteints.
+ */
 static int callback_eteindre_feux(void) {
     printf("[FSM] -> ETEINTS\n");
     return 0;
 }
 
+/**
+ * @brief Callback appelé lorsqu'il y a une erreur.
+ */
 static int callback_erreur(void) {
     printf("[FSM] -> ERREUR\n");
     return 0;
@@ -141,6 +174,7 @@ tTransition trans[] = {
  * @brief Détermine le prochain événement à traiter.
  *
  * Lit les entrées de commande et retourne l'événement correspondant en fonction de l'état actuel.
+ * L'ordre des conditions est important dans la logique de la FSM.
  *
  * @param current_state État courant de la FSM.
  * @return Evénement à traiter.
@@ -160,11 +194,11 @@ int get_next_event(int current_state)
     boolean_t commande_clignotant_droit = get_commande_clignotant_droit();
     boolean_t commande_clignotant_gauche = get_commande_clignotant_gauche();
 
-    boolean_t commande_clignotant_any = (commande_warning == 1)
-                                    || (commande_clignotant_droit == 1)
-                                    || (commande_clignotant_gauche == 1);
+    boolean_t commande_clignotant_any = (commande_warning == CMD_ACTIVEE)
+                                    || (commande_clignotant_droit == CMD_ACTIVEE)
+                                    || (commande_clignotant_gauche == CMD_ACTIVEE);
 
-    if(commande_clignotant_any == 0) {
+    if(commande_clignotant_any == CMD_ETEINTE) {
         return EV_CMD_0;
     }
 
@@ -173,12 +207,12 @@ int get_next_event(int current_state)
         case ST_ACTIVES_ALLUMES:
         case ST_ACTIVES_ETEINTS: {
 
-            if(get_acquittement_fsm_feux_clignotants_warnings() == 1) {
+            if(get_acquittement_fsm_feux_clignotants_warnings() == CMD_ACTIVEE) {
                 return EV_ACQUITTEMENT_RECU;
             }
 
             const double elapsed = difftime(time(NULL), g_ack_debut_s);
-            if(elapsed >= 1.0) {
+            if(elapsed >= ACQ_FEUX_CLIGNOTANTS_WARNINGS) {
                 return EV_ACQUITTEMENT_EXPIRE;
             }
 
@@ -190,7 +224,7 @@ int get_next_event(int current_state)
         case ST_ACQUITTES_ETEINT: {
 
             const double elapsed = difftime(time(NULL), g_clignotement_debut_s);
-            if(elapsed >= 1.0) {
+            if(elapsed >= ACQ_FEUX_CLIGNOTANTS_WARNINGS) {
                 return EV_TEMPS_1SEC;
             }
 
