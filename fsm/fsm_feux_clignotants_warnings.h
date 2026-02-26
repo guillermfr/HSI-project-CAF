@@ -10,25 +10,13 @@
 
 #include "../lib/output/types.h"
 #include "../lib/output/donnees.h"
-
-static int callback_initialisation(void);
-
-static int callback_enter_actives_allumes(void);
-
-static int callback_enter_actives_eteints(void);
-
-static int callback_enter_acquittes_allume(void);
-
-static int callback_enter_acquittes_eteint(void);
-
-static int callback_eteindre_feux(void);
-
-static int callback_erreur(void);
+#include "../lib/output/define.h"
 
 /**
  * @brief Détermine le prochain événement à traiter.
  *
  * Lit les entrées de commande et retourne l'événement correspondant en fonction de l'état actuel.
+ * L'ordre des conditions est important dans la logique de la FSM.
  *
  * @param current_state État courant de la FSM.
  * @return Evénement à traiter.
