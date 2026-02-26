@@ -160,8 +160,8 @@ int get_next_event(int current_state)
                 return EV_ACQUITTEMENT_RECU;
             }
 
-            double elapsed = difftime(time(NULL), g_allumes_debut_ms);
-            if (elapsed >= 1u) {
+            const double elapsed = difftime(time(NULL), g_allumes_debut_ms);
+            if (elapsed >= ACQ_FEUX_CLASSIQUES) {
                 return EV_ACQUITTEMENT_EXPIRE;
             }
 
