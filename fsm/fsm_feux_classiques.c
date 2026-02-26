@@ -55,6 +55,9 @@ static int callback_initialisation(void) {
 
 /**
  * @brief Callback appelé lors de la transition où les feux passent de l'état éteints à allumés.
+ * 
+ * Ce callback permet de récupérer le temps au moment de la transition afin de le réutiliser plus tard lors de la vérification de la durée de l'acquittement.
+ * 
  */
 static int callback_allumer_feux(void) {
     printf("[FSM] -> ALLUMER FEUX\n");
