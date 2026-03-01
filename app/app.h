@@ -27,11 +27,11 @@ void decoder_trame_serie(v_uint8_t serialFrame);
 
 
 /**
- * @brief Encode les données applicatives dans une trame UDP à envoyer au MUX.
+ * @brief Encode et envoie la trame série.
  * 
- * @param udpFrame Le buffer de 10 octets à remplir avec la trame UDP à envoyer.
+ * @param identifiant_driver L'identifiant du driver ouvert.
  */
-void encoder_trame_udp(v_uint8_t* udpFrame);
+void envoyer_trame_serie(v_int32_t identifiant_driver);
 
 /**
  * @brief Vérifie que le numéro de trame reçu correspond à celui attendu.

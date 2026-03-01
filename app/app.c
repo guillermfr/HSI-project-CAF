@@ -112,6 +112,50 @@ void decoder_trame_serie(v_uint8_t serialFrame) {
 }
 
 
+void envoyer_trame_serie(v_int32_t identifiant_driver) {
+    serial_frame_t frames[5];
+    v_uint32_t nb_frames = 0;
+    
+    const v_int32_t SER_SERIE = 11;
+
+    // 1. Feux de position
+    frames[nb_frames].serNum = SER_SERIE;
+    frames[nb_frames].frameSize = 2;
+    frames[nb_frames].frame[0] = 0x01;
+    frames[nb_frames].frame[1] = get_commande_feux_position() ? 0x01 : 0x00;
+    nb_frames++;
+
+    // 2. Feux de croisement
+    frames[nb_frames].serNum = SER_SERIE;
+    frames[nb_frames].frameSize = 2;
+    frames[nb_frames].frame[0] = 0x02;
+    frames[nb_frames].frame[1] = get_commande_feux_croisement() ? 0x01 : 0x00;
+    nb_frames++;
+
+    // 3. Feux de route
+    frames[nb_frames].serNum = SER_SERIE;
+    frames[nb_frames].frameSize = 2;
+    frames[nb_frames].frame[0] = 0x03;
+    frames[nb_frames].frame[1] = get_commande_feux_route() ? 0x01 : 0x00;
+    nb_frames++;
+
+    // 4. Clignotant droit
+    frames[nb_frames].serNum = SER_SERIE;
+    frames[nb_frames].frameSize = 2;
+    frames[nb_frames].frame[0] = 0x04;
+    frames[nb_frames].frame[1] = get_commande_clignotant_droit() ? 0x01 : 0x00;
+    nb_frames++;
+
+    // 5. Clignotant gauche
+    frames[nb_frames].serNum = SER_SERIE;
+    frames[nb_frames].frameSize = 2;
+    frames[nb_frames].frame[0] = 0x05;
+    frames[nb_frames].frame[1] = get_commande_clignotant_gauche() ? 0x01 : 0x00;
+    nb_frames++;
+
+    drv_write_ser(identifiant_driver, frames, nb_frames);
+}
+
 void verifier_numero_de_trame(v_uint8_t numeroRecu, v_uint8_t *pTrameAttendue) {
     if (numeroRecu == 0) {
         *pTrameAttendue = 1;
@@ -168,7 +212,6 @@ int main(void) {
             decoder_trame_udp(trame_udp);
         }
 
-        compteur_cycle++;
 
         // Lecture de la trame série 500 ms
         if(compteur_cycle >= 5) {
@@ -188,11 +231,14 @@ int main(void) {
         encoder_trame_udp(trame_udp_a_envoyer);
         drv_write_udp_200ms(identifiant_driver, trame_udp_a_envoyer);
 
-        //TODO : Encodage et Ecriture de la trame série
+        // Encodage et Ecriture de la trame série
         if (compteur_cycle >= 5) {
+            envoyer_trame_serie(identifiant_driver);
             compteur_cycle = 0;
         }
+        compteur_cycle++;
     }
-    
+    // Fermeture du driver
+    drv_close(identifiant_driver);
     return 0;
 }
