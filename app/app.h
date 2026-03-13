@@ -1,3 +1,8 @@
+/**
+ * @file app.h
+ * @brief Déclaration des fonctions de l'application.
+ */
+
 #ifndef APP_H
 #define APP_H
 
@@ -9,36 +14,10 @@
 #include "../lib/output/donnees.h"
 #include "../lib/output/types.h"
 
-
-/**
- * @brief Décode la trame UDP reçue du MUX et met à jour les données applicatives.
- * 
- * @param udpFrame Le buffer contenant la trame UDP (15 octets).
- */
 void decoder_trame_udp(v_uint8_t *udpFrame);
-
-
-/**
- * @brief Décode la trame série reçue du Comodo et affiche les commandes.
- * 
- * @param serialFrame L'octet de données de la trame série.
- */
 void decoder_trame_serie(v_uint8_t serialFrame);
-
-
-/**
- * @brief Encode et envoie la trame série.
- * 
- * @param identifiant_driver L'identifiant du driver ouvert.
- */
 void envoyer_trame_serie(v_int32_t identifiant_driver);
-
-/**
- * @brief Vérifie que le numéro de trame reçu correspond à celui attendu.
- * 
- * @param numeroRecu Le numéro de trame reçu.
- * @param pTrameAttendue Pointeur vers le numéro de trame attendu (mis à jour si la vérification est réussie).
- */
+void encoder_trame_udp(v_uint8_t* udpFrame);
 void verifier_numero_de_trame(v_uint8_t numeroRecu, v_uint8_t *pTrameAttendue);
 
 #endif /* APP_H */
