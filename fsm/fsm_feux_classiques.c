@@ -130,9 +130,10 @@ tTransition trans[] = {
  * L'ordre des conditions est important dans la logique de la FSM.
  *
  * @param current_state État courant de la FSM.
+ * @param id_message_feux Type de feux à gérer par la FSM.
  * @return Evénement à traiter.
  */
-int get_next_event(int current_state)
+int get_next_event(int current_state, enum_id_message_feu_t id_message_feux)
 {
 
     if(current_state == ST_INIT) {
@@ -143,23 +144,27 @@ int get_next_event(int current_state)
         return EV_NONE;
     }
 
-    boolean_t commande_feux_position = get_commande_feux_position();
-    boolean_t commande_feux_croisement = get_commande_feux_croisement();
-    boolean_t commande_feux_route = get_commande_feux_route();
+    boolean_t commande_feux = 0;
 
-    boolean_t commande_feux_any = (commande_feux_position == CMD_ACTIVEE)
-                                 || (commande_feux_croisement == CMD_ACTIVEE)
-                                 || (commande_feux_route == CMD_ACTIVEE);
+    if(id_message_feux == ENUM_ID_MESSAGE_FEU_T_MSG_FEU_POSITION) {
+        commande_feux = get_commande_feux_position();
+    }
+    else if(id_message_feux == ENUM_ID_MESSAGE_FEU_T_MSG_FEU_CROISEMENT) {
+        commande_feux = get_commande_feux_croisement();
+    }
+    else if(id_message_feux == ENUM_ID_MESSAGE_FEU_T_MSG_FEU_ROUTE) {
+        commande_feux = get_commande_feux_route();
+    }
 
-    if(commande_feux_any == CMD_ETEINTE) {
+    if(commande_feux == CMD_ETEINTE) {
         return EV_CMD_0;
     }
 
-    if(commande_feux_any == CMD_ACTIVEE) {
+    if(commande_feux == CMD_ACTIVEE) {
 
         if(current_state == ST_ALLUMES) {
 
-            if(get_acquittement_fsm_feux_classiques == CMD_ACTIVEE) {
+            if(get_acquittement_fsm_feux_classiques() == CMD_ACTIVEE) {
                 return EV_ACQUITTEMENT_RECU;
             }
 
@@ -178,34 +183,44 @@ int get_next_event(int current_state)
 
 }
 
-int main(void)
+//TODO: doxygen
+void fsm_feux_classiques(enum_id_message_feu_t id_message_feux)
 {
     int i = 0;
-    int ret = 0; 
-    int event = EV_NONE;
-    int state = ST_INIT;
     
-    /* While FSM hasn't reach end state */
-    while (state != ST_TERM) {
+    int event = EV_NONE;
+    int state = ST_ANY;
+
+    if(id_message_feux == ENUM_ID_MESSAGE_FEU_T_MSG_FEU_POSITION) {
+        state = get_etat_fsm_feux_classiques_position();
+    }
+    else if(id_message_feux == ENUM_ID_MESSAGE_FEU_T_MSG_FEU_CROISEMENT) {
+        state = get_etat_fsm_feux_classiques_croisement();
+    }
+    else if(id_message_feux == ENUM_ID_MESSAGE_FEU_T_MSG_FEU_ROUTE) {
+        state = get_etat_fsm_feux_classiques_route();
+    }
         
-        /* Get event */
-        event = get_next_event(state);
-        
-        /* For each transitions */
-        for (i = 0; i < TRANS_COUNT; i++) {
-            /* If State is current state OR The transition applies to all states ...*/
-            if ((state == trans[i].state) || (ST_ANY == trans[i].state)) {
-                /* If event is the transition event OR the event applies to all */
-                if ((event == trans[i].event) || (EV_ANY == trans[i].event)) {
-                    /* Apply the new state */
-                    state = trans[i].next_state;
-                    if (trans[i].callback != NULL) {
-                        /* Call the state function */
-                        ret = (trans[i].callback)();
-                    }
-                    break;
+    /* Get event */
+    event = get_next_event(state, id_message_feux);
+    
+    /* For each transitions */
+    for (i = 0; i < TRANS_COUNT; i++) {
+        /* If State is current state OR The transition applies to all states ...*/
+        if ((state == trans[i].state) || (ST_ANY == trans[i].state)) {
+            /* If event is the transition event OR the event applies to all */
+            if ((event == trans[i].event) || (EV_ANY == trans[i].event)) {
+                /* Apply the new state */
+                state = trans[i].next_state;
+                set_etat_fsm_feux_classiques(state);
+                if (trans[i].callback != NULL) {
+                    /* Call the state function */
+                    (void)trans[i].callback();
                 }
+                break;
             }
         }
     }
+
+    
 }
