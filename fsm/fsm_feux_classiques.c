@@ -181,7 +181,13 @@ int get_next_event(int current_state, enum_id_message_feu_t id_message_feux)
 
 }
 
-//TODO: doxygen
+/**
+ * @brief Fonction de la FSM des feux classiques.
+ * Cette fonction doit être appelée à chaque cycle de la boucle principale du programme.
+ * 
+ * @param id_message_feux Type de feux à gérer par la FSM.
+ * @return void
+ */
 void fsm_feux_classiques(enum_id_message_feu_t id_message_feux)
 {
     int i = 0;
