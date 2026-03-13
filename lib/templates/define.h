@@ -43,4 +43,24 @@
  */
 #define TIMER_ESSUIE_GLACES_LAVE_GLACE 2.0
 
+/**
+ * @brief Valeur de l'acquittement lorsqu'il n'est pas reçu 
+ */
+#define ACQ_NON_VALIDE 0
+
+/**
+ * @brief Valeur de l'acquittement lorsqu'il est bien reçu 
+ */
+#define ACQ_OK 1
+
+/**
+ * @brief Serial number associé au BGF
+ */
+#define SER_NUM_BGF 11
+
+/**
+ * @brief Serial number associé au Comodo
+ */
+#define SER_NUM_COMODO 12
+
 #endif /* DEFINE_H */
