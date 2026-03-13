@@ -12,7 +12,7 @@
 #include "../lib/output/donnees.h"
 #include "../lib/output/define.h"
 
-int get_next_event(int current_state, enum_id_message_feu_t id_message_feux);
+int get_next_event_feux_classiques(int current_state, enum_id_message_feu_t id_message_feux);
 void fsm_feux_classiques(enum_id_message_feu_t id_message_feux);
 
 #endif

@@ -176,7 +176,7 @@ tTransition trans[] = {
  * @param id_message_clignotants_warning Type de clignotant à gérer par la FSM.
  * @return Evénement à traiter.
  */
-int get_next_event(int current_state, enum_id_message_feu_t id_message_clignotants_warning)
+int get_next_event_clignotants_warning(int current_state, enum_id_message_feu_t id_message_clignotants_warning)
 {
 
     if(current_state == ST_INIT) {
@@ -268,7 +268,7 @@ void fsm_feux_clignotant_warning(enum_id_message_feu_t id_message_clignotants_wa
     }
     
     /* Get event */
-    event = get_next_event(state, id_message_clignotants_warning);
+    event = get_next_event_clignotants_warning(state, id_message_clignotants_warning);
 
     /* For each transitions */
     for (i = 0; i < TRANS_COUNT; i++) {
@@ -278,7 +278,17 @@ void fsm_feux_clignotant_warning(enum_id_message_feu_t id_message_clignotants_wa
             if ((event == trans[i].event) || (EV_ANY == trans[i].event)) {
                 /* Apply the new state */
                 state = trans[i].next_state;
-                set_etat_fsm_feux_clignotants_warnings(state);
+
+                if(id_message_clignotants_warning == ENUM_ID_MESSAGE_FEU_T_MSG_CLIGNOTANT_DROIT) {
+                    set_etat_fsm_clignotants_droit(state);
+                }
+                else if(id_message_clignotants_warning == ENUM_ID_MESSAGE_FEU_T_MSG_CLIGNOTANT_GAUCHE) {
+                    set_etat_fsm_clignotants_gauche(state);
+                }
+                else if(id_message_clignotants_warning == ENUM_ID_MESSAGE_FEU_T_MSG_WARNING) {
+                    set_etat_fsm_warning(state);
+                }
+                
                 if (trans[i].callback != NULL) {
                     /* Call the state function */
                     (void) trans[i].callback();

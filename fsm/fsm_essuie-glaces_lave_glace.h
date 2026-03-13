@@ -12,7 +12,7 @@
 #include "../lib/output/donnees.h"
 #include "../lib/output/define.h"
 
-int get_next_event(int current_state);
+int get_next_event_essuie_glace_lave_glace(int current_state);
 void fsm_essuie_glace_lave_glace();
 
 #endif 

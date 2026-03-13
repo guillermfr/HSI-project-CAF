@@ -131,7 +131,7 @@ tTransition trans[] = {
  * @param id_message_feux Type de feux à gérer par la FSM.
  * @return Evénement à traiter.
  */
-int get_next_event(int current_state, enum_id_message_feu_t id_message_feux)
+int get_next_event_feux_classiques(int current_state, enum_id_message_feu_t id_message_feux)
 {
 
     if(current_state == ST_INIT) {
@@ -206,7 +206,7 @@ void fsm_feux_classiques(enum_id_message_feu_t id_message_feux)
     }
         
     /* Get event */
-    event = get_next_event(state, id_message_feux);
+    event = get_next_event_feux_classiques(state, id_message_feux);
     
     /* For each transitions */
     for (i = 0; i < TRANS_COUNT; i++) {
@@ -216,7 +216,17 @@ void fsm_feux_classiques(enum_id_message_feu_t id_message_feux)
             if ((event == trans[i].event) || (EV_ANY == trans[i].event)) {
                 /* Apply the new state */
                 state = trans[i].next_state;
-                set_etat_fsm_feux_classiques(state);
+
+                if(id_message_feux == ENUM_ID_MESSAGE_FEU_T_MSG_FEU_POSITION) {
+                    set_etat_fsm_feux_classiques_position(state);
+                }
+                else if(id_message_feux == ENUM_ID_MESSAGE_FEU_T_MSG_FEU_CROISEMENT) {
+                    set_etat_fsm_feux_classiques_croisement(state);
+                }
+                else if(id_message_feux == ENUM_ID_MESSAGE_FEU_T_MSG_FEU_ROUTE) {
+                    set_etat_fsm_feux_classiques_route(state);
+                }
+                
                 if (trans[i].callback != NULL) {
                     /* Call the state function */
                     (void)trans[i].callback();

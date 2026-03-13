@@ -12,7 +12,7 @@
 #include "../lib/output/donnees.h"
 #include "../lib/output/define.h"
 
-int get_next_event(int current_state, enum_id_message_feu_t id_message_clignotants_warning);
+int get_next_event_clignotants_warning(int current_state, enum_id_message_feu_t id_message_clignotants_warning);
 void fsm_feux_clignotant_warning(enum_id_message_feu_t id_message_clignotants_warning);
 
 #endif

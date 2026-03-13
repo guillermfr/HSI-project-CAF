@@ -153,7 +153,7 @@ tTransition trans[] = {
  * @param current_state État courant de la FSM.
  * @return Evénement à traiter.
  */
-int get_next_event(int current_state)
+int get_next_event_essuie_glace_lave_glace(int current_state)
 {
     if (current_state == ST_INIT) {
         return EV_INIT;
@@ -199,10 +199,10 @@ void fsm_essuie_glace_lave_glace()
 {
     int i = 0;
     int event = EV_NONE;
-    int state = get_etat_fsm_essuie_glaces_lave_glace();
+    int state = get_etat_fsm_essuie_glace_lave_glace();
     
     /* Get event */
-    event = get_next_event(state);
+    event = get_next_event_essuie_glace_lave_glace(state);
     
     /* For each transitions */
     for (i = 0; i < TRANS_COUNT; i++) {
@@ -212,7 +212,7 @@ void fsm_essuie_glace_lave_glace()
             if ((event == trans[i].event) || (EV_ANY == trans[i].event)) {
                 /* Apply the new state */
                 state = trans[i].next_state;
-                set_etat_fsm_essuie_glaces_lave_glace(state);
+                set_etat_fsm_essuie_glace_lave_glace(state);
                 if (trans[i].callback != NULL) {
                     /* Call the state function */
                     (void)trans[i].callback();
