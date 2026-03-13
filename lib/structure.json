@@ -210,9 +210,19 @@
         { "id" : 18, "nom" : "id_message", "type" : "enum_id_message_feu_t", "dimension" : "1", "init" : "0", "commentaire" : "ID du message pour la trame BCGV vers BGF" },
         { "id" : 19, "nom" : "activation_feu", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Etat actuel du feu" },
 
-        { "id" : 20, "nom" : "acquittement_fsm_feux_classiques", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Acquittement d'un message pour la FSM des feux classiques" },
-        { "id" : 21, "nom" : "acquittement_fsm_feux_clignotants_warnings", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Acquittement d'un message pour la FSM des clignotants ou des warnings" },
-        { "id" : 22, "nom" : "acquittement_fsm_essuie_glaces_lave_glace", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Acquittement d'un message pour la FSM des essuie-glaces ou du lave glace" }
+        { "id" : 20, "nom" : "acq_feux_position", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Acquittement feux de position" },
+        { "id" : 21, "nom" : "acq_feux_croisement", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Acquittement feux de croisement" },
+        { "id" : 22, "nom" : "acq_feux_route", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Acquittement feux de route" },
+        { "id" : 23, "nom" : "acq_clignotant_droit", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Acquittement clignotant droit" },
+        { "id" : 24, "nom" : "acq_clignotant_gauche", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Acquittement clignotant gauche" },
+        { "id" : 25, "nom" : "acq_warning", "type" : "boolean_t", "dimension" : "1", "init" : "0", "commentaire" : "Acquittement warning" },
+        
+        { "id" : 26, "nom" : "etat_fsm_feux_classiques_position", "type" : "v_uint8_t", "dimension" : "1", "init" : "0", "commentaire" : "Etat de la FSM feux classiques - feux de position" },
+        { "id" : 27, "nom" : "etat_fsm_feux_classiques_croisement", "type" : "v_uint8_t", "dimension" : "1", "init" : "0", "commentaire" : "Etat de la FSM feux classiques - feux de croisement" },
+        { "id" : 28, "nom" : "etat_fsm_feux_classiques_route", "type" : "v_uint8_t", "dimension" : "1", "init" : "0", "commentaire" : "Etat de la FSM feux classiques - feux de route" },
+        { "id" : 29, "nom" : "etat_fsm_clignotants_droit", "type" : "v_uint8_t", "dimension" : "1", "init" : "0", "commentaire" : "Etat de la FSM clignotants - clignotant droit" },
+        { "id" : 30, "nom" : "etat_fsm_clignotants_gauche", "type" : "v_uint8_t", "dimension" : "1", "init" : "0", "commentaire" : "Etat de la FSM clignotants - clignotant gauche" },
+        { "id" : 31, "nom" : "etat_fsm_warning", "type" : "v_uint8_t", "dimension" : "1", "init" : "0", "commentaire" : "Etat de la FSM warning - warning actif ou non (toggle)" }
     ]
     
 }
