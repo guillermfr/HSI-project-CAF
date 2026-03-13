@@ -1,8 +1,8 @@
 /**
  * @file fsm_essuie-glaces_lave_glace.c
- * @brief Programme de la final state machine pour les essuie-glaces et le lave glace.
+ * @brief Programme de la finite state machine pour les essuie-glaces et le lave glace.
  *
- * Ce programme gère la final state machine pour les essuie-glaces et le lave glace.
+ * Ce programme gère la finite state machine pour les essuie-glaces et le lave glace.
  * Il reprend le schéma présent dans l'ennoncé.
  */
 

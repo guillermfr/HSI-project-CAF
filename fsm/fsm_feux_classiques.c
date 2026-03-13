@@ -1,8 +1,8 @@
 /**
  * @file fsm_feux_classiques.c
- * @brief Programme de la final state machine pour les feux classiques.
+ * @brief Programme de la finite state machine pour les feux classiques.
  *
- * Ce programme gère la final state machine pour les 3 types de feu qui doivent être gérés.
+ * Ce programme gère la finite state machine pour les 3 types de feu qui doivent être gérés.
  * Il reprend le schéma présent dans l'ennoncé.
  */
 

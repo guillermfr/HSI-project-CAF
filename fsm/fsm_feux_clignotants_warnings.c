@@ -1,8 +1,8 @@
 /**
  * @file fsm_feux_clignotants_warnings.c
- * @brief Programme de la final state machine pour les clignotants et warnings.
+ * @brief Programme de la finite state machine pour les clignotants et warnings.
  *
- * Ce programme gère la final state machine pour le clignotant gauche, le clignotant droit et les warnings.
+ * Ce programme gère la finite state machine pour le clignotant gauche, le clignotant droit et les warnings.
  * Il reprend le schéma présent dans l'ennoncé.
  */
 
