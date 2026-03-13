@@ -3,7 +3,7 @@
  * @brief Programme de la finite state machine pour les clignotants et warnings.
  *
  * Ce programme gère la finite state machine pour le clignotant gauche, le clignotant droit et les warnings.
- * Il reprend le schéma présent dans l'ennoncé.
+ * Il reprend le schéma présent dans l'énoncé.
  */
 
 #include <stdlib.h>
@@ -177,9 +177,10 @@ tTransition trans[] = {
  * L'ordre des conditions est important dans la logique de la FSM.
  *
  * @param current_state État courant de la FSM.
+ * @param id_message_clignotants_warning Type de clignotant à gérer par la FSM.
  * @return Evénement à traiter.
  */
-int get_next_event(int current_state)
+int get_next_event(int current_state, enum_id_message_feu_t id_message_clignotants_warning)
 {
 
     if(current_state == ST_INIT) {
@@ -190,18 +191,23 @@ int get_next_event(int current_state)
         return EV_NONE;
     }
 
-    boolean_t commande_warning = get_commande_warning();
-    boolean_t commande_clignotant_droit = get_commande_clignotant_droit();
-    boolean_t commande_clignotant_gauche = get_commande_clignotant_gauche();
+    boolean_t commande_clignotants_warning = 0;
 
-    boolean_t commande_clignotant_any = (commande_warning == CMD_ACTIVEE)
-                                    || (commande_clignotant_droit == CMD_ACTIVEE)
-                                    || (commande_clignotant_gauche == CMD_ACTIVEE);
+    if(id_message_clignotants_warning == ENUM_ID_MESSAGE_FEU_T_MSG_CLIGNOTANT_DROIT) {
+        commande_clignotants_warning = get_commande_clignotant_droit();
+    }
+    else if(id_message_clignotants_warning == ENUM_ID_MESSAGE_FEU_T_MSG_CLIGNOTANT_GAUCHE) {
+        commande_clignotants_warning = get_commande_clignotant_gauche();
+    }
+    else if(id_message_clignotants_warning == ENUM_ID_MESSAGE_FEU_T_MSG_WARNING) {
+        commande_clignotants_warning = get_commande_warning();
+    }
 
-    if(commande_clignotant_any == CMD_ETEINTE) {
+    if(commande_clignotants_warning == CMD_ETEINTE) {
         return EV_CMD_0;
     }
 
+    //TODO: mettre timer dans la mega variable globale
     switch (current_state) {
 
         case ST_ACTIVES_ALLUMES:
@@ -242,36 +248,44 @@ int get_next_event(int current_state)
 
 }
 
-int main(void)
+//TODO: doxygen
+void fsm_feux_clignotant_warning(enum_id_message_feu_t id_message_clignotants_warning)
 {
     int i = 0;
-    int ret = 0; 
-    int event = EV_NONE;
-    int state = ST_INIT;
     
-    /* While FSM hasn't reach end state */
-    while (state != ST_TERM) {
-        
-        /* Get event */
-        event = get_next_event(state);
-        
-        /* For each transitions */
-        for (i = 0; i < TRANS_COUNT; i++) {
-            /* If State is current state OR The transition applies to all states ...*/
-            if ((state == trans[i].state) || (ST_ANY == trans[i].state)) {
-                /* If event is the transition event OR the event applies to all */
-                if ((event == trans[i].event) || (EV_ANY == trans[i].event)) {
-                    /* Apply the new state */
-                    state = trans[i].next_state;
-                    if (trans[i].callback != NULL) {
-                        /* Call the state function */
-                        ret = (trans[i].callback)();
-                    }
-                    break;
+    int event = EV_NONE;
+    int state = ST_ANY;
+
+    if(id_message_clignotants_warning == ENUM_ID_MESSAGE_FEU_T_MSG_CLIGNOTANT_DROIT) {
+        state = get_etat_fsm_clignotants_droit();
+    }
+    else if(id_message_clignotants_warning == ENUM_ID_MESSAGE_FEU_T_MSG_CLIGNOTANT_GAUCHE) {
+        state = get_etat_fsm_clignotants_gauche();
+    }
+    else if(id_message_clignotants_warning == ENUM_ID_MESSAGE_FEU_T_MSG_WARNING) {
+        state = get_etat_fsm_warning();
+    }
+    
+    /* Get event */
+    event = get_next_event(state, id_message_clignotants_warning);
+
+    /* For each transitions */
+    for (i = 0; i < TRANS_COUNT; i++) {
+        /* If State is current state OR The transition applies to all states ...*/
+        if ((state == trans[i].state) || (ST_ANY == trans[i].state)) {
+            /* If event is the transition event OR the event applies to all */
+            if ((event == trans[i].event) || (EV_ANY == trans[i].event)) {
+                /* Apply the new state */
+                state = trans[i].next_state;
+                set_etat_fsm_feux_clignotants_warnings(state);
+                if (trans[i].callback != NULL) {
+                    /* Call the state function */
+                    (void) trans[i].callback();
                 }
+                break;
             }
         }
     }
 
-    return ret;
+  
 }
