@@ -96,7 +96,7 @@ typedef struct {
 } tTransition;
 
 /* Transition table */
-tTransition trans[] = {
+static tTransition trans[] = {
 
     /* INITIALISATION */
     {ST_INIT, EV_INIT, &callback_initialisation, ST_ETEINTS},
@@ -162,7 +162,15 @@ int get_next_event_feux_classiques(int current_state, enum_id_message_feu_t id_m
 
         if(current_state == ST_ALLUMES) {
 
-            if(get_acquittement_fsm_feux_classiques() == CMD_ACTIVEE) {
+            if(id_message_feux == ENUM_ID_MESSAGE_FEU_T_MSG_FEU_POSITION && get_acq_feux_position() == CMD_ACTIVEE) {
+                return EV_ACQUITTEMENT_RECU;
+            }
+
+            if(id_message_feux == ENUM_ID_MESSAGE_FEU_T_MSG_FEU_CROISEMENT && get_acq_feux_croisement() == CMD_ACTIVEE) {
+                return EV_ACQUITTEMENT_RECU;
+            }
+
+            if(id_message_feux == ENUM_ID_MESSAGE_FEU_T_MSG_FEU_ROUTE && get_acq_feux_route() == CMD_ACTIVEE) {
                 return EV_ACQUITTEMENT_RECU;
             }
 
@@ -190,7 +198,7 @@ int get_next_event_feux_classiques(int current_state, enum_id_message_feu_t id_m
  */
 void fsm_feux_classiques(enum_id_message_feu_t id_message_feux)
 {
-    int i = 0;
+    long unsigned int i = 0;
     
     int event = EV_NONE;
     int state = ST_ANY;
@@ -226,7 +234,7 @@ void fsm_feux_classiques(enum_id_message_feu_t id_message_feux)
                 else if(id_message_feux == ENUM_ID_MESSAGE_FEU_T_MSG_FEU_ROUTE) {
                     set_etat_fsm_feux_classiques_route(state);
                 }
-                
+
                 if (trans[i].callback != NULL) {
                     /* Call the state function */
                     (void)trans[i].callback();

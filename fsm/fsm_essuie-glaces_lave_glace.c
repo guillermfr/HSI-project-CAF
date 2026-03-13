@@ -112,7 +112,7 @@ typedef struct {
 } tTransition;
 
 /* Transition table */
-tTransition trans[] = {
+static tTransition trans[] = {
 
     /* INITIALISATION */
     {ST_INIT, EV_INIT, &callback_initialisation, ST_ETEINTS},
@@ -197,7 +197,8 @@ int get_next_event_essuie_glace_lave_glace(int current_state)
  */
 void fsm_essuie_glace_lave_glace()
 {
-    int i = 0;
+    long unsigned int i = 0;
+    
     int event = EV_NONE;
     int state = get_etat_fsm_essuie_glace_lave_glace();
     

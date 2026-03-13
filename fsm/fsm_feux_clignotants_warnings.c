@@ -129,7 +129,7 @@ typedef struct {
 } tTransition;
 
 /* Transition table */
-tTransition trans[] = {
+static tTransition trans[] = {
 
     /* INITIALISATION */
     { ST_INIT, EV_INIT, callback_initialisation, ST_ETEINTS },
@@ -208,7 +208,15 @@ int get_next_event_clignotants_warning(int current_state, enum_id_message_feu_t 
         case ST_ACTIVES_ALLUMES:
         case ST_ACTIVES_ETEINTS: {
 
-            if(get_acquittement_fsm_feux_clignotants_warnings() == CMD_ACTIVEE) {
+            if(id_message_clignotants_warning == ENUM_ID_MESSAGE_FEU_T_MSG_CLIGNOTANT_DROIT && get_acq_clignotant_droit() == CMD_ACTIVEE) {
+                return EV_ACQUITTEMENT_RECU;
+            }
+
+            if(id_message_clignotants_warning == ENUM_ID_MESSAGE_FEU_T_MSG_CLIGNOTANT_GAUCHE && get_acq_clignotant_gauche() == CMD_ACTIVEE) {
+                return EV_ACQUITTEMENT_RECU;
+            }
+
+             if(id_message_clignotants_warning == ENUM_ID_MESSAGE_FEU_T_MSG_WARNING && get_acq_warning() == CMD_ACTIVEE) {
                 return EV_ACQUITTEMENT_RECU;
             }
 
@@ -252,7 +260,7 @@ int get_next_event_clignotants_warning(int current_state, enum_id_message_feu_t 
  */
 void fsm_feux_clignotant_warning(enum_id_message_feu_t id_message_clignotants_warning)
 {
-    int i = 0;
+    long unsigned int i = 0;
     
     int event = EV_NONE;
     int state = ST_ANY;
