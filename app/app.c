@@ -8,6 +8,11 @@
 
 #include "app.h"
 
+/**
+ * @brief Décode la trame UDP reçue du MUX et met à jour les données applicatives.
+ * 
+ * @param udpFrame Le buffer contenant la trame UDP (15 octets).
+ */
 void decoder_trame_udp(v_uint8_t *udpFrame) {
     set_numero_de_trame(udpFrame[0]); // 1 octet
 
@@ -33,7 +38,11 @@ void decoder_trame_udp(v_uint8_t *udpFrame) {
     set_CRC8(udpFrame[14]); // 1 octet
 }
 
-
+/**
+ * @brief Encode la trame UDP à envoyer.
+ * 
+ * @param udpFrame Le buffer contenant la trame UDP (15 octets).
+ */
 void encoder_trame_udp(v_uint8_t* udpFrame) {
     for (int i = 0; i < DRV_UDP_200MS_FRAME_SIZE; i++) {
         udpFrame[i] = 0;
@@ -99,7 +108,11 @@ void encoder_trame_udp(v_uint8_t* udpFrame) {
     udpFrame[9] = rpm & 0xFF;
 }
 
-
+/**
+ * @brief Décode la trame série reçue du Comodo et affiche les commandes.
+ * 
+ * @param serialFrame L'octet de données de la trame série.
+ */
 void decoder_trame_serie(v_uint8_t serialFrame) {
     set_commande_warning((serialFrame >> 7) & 0x01); // 1 bit
     set_commande_feux_position((serialFrame >> 6) & 0x01); // 1 bit
@@ -111,7 +124,11 @@ void decoder_trame_serie(v_uint8_t serialFrame) {
     set_commande_lave_glace((serialFrame >> 0) & 0x01); // 1 bit
 }
 
-
+/**
+ * @brief Encode et envoie la trame série.
+ * 
+ * @param identifiant_driver L'identifiant du driver ouvert.
+ */
 void envoyer_trame_serie(v_int32_t identifiant_driver) {
     serial_frame_t frames[5];
     v_uint32_t nb_frames = 0;
@@ -156,6 +173,12 @@ void envoyer_trame_serie(v_int32_t identifiant_driver) {
     drv_write_ser(identifiant_driver, frames, nb_frames);
 }
 
+/**
+ * @brief Vérifie que le numéro de trame reçu correspond à celui attendu.
+ * 
+ * @param numeroRecu Le numéro de trame reçu.
+ * @param pTrameAttendue Pointeur vers le numéro de trame attendu (mis à jour si la vérification est réussie).
+ */
 void verifier_numero_de_trame(v_uint8_t numeroRecu, v_uint8_t *pTrameAttendue) {
     if (numeroRecu == 0) {
         *pTrameAttendue = 1;
