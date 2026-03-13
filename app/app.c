@@ -132,39 +132,37 @@ void decoder_trame_serie(v_uint8_t serialFrame) {
 void envoyer_trame_serie(v_int32_t identifiant_driver) {
     serial_frame_t frames[5];
     v_uint32_t nb_frames = 0;
-    
-    const v_int32_t SER_SERIE = 11;
 
     // 1. Feux de position
-    frames[nb_frames].serNum = SER_SERIE;
+    frames[nb_frames].serNum = SER_NUM_BGF;
     frames[nb_frames].frameSize = 2;
     frames[nb_frames].frame[0] = 0x01;
     frames[nb_frames].frame[1] = get_commande_feux_position() ? 0x01 : 0x00;
     nb_frames++;
 
     // 2. Feux de croisement
-    frames[nb_frames].serNum = SER_SERIE;
+    frames[nb_frames].serNum = SER_NUM_BGF;
     frames[nb_frames].frameSize = 2;
     frames[nb_frames].frame[0] = 0x02;
     frames[nb_frames].frame[1] = get_commande_feux_croisement() ? 0x01 : 0x00;
     nb_frames++;
 
     // 3. Feux de route
-    frames[nb_frames].serNum = SER_SERIE;
+    frames[nb_frames].serNum = SER_NUM_BGF;
     frames[nb_frames].frameSize = 2;
     frames[nb_frames].frame[0] = 0x03;
     frames[nb_frames].frame[1] = get_commande_feux_route() ? 0x01 : 0x00;
     nb_frames++;
 
     // 4. Clignotant droit
-    frames[nb_frames].serNum = SER_SERIE;
+    frames[nb_frames].serNum = SER_NUM_BGF;
     frames[nb_frames].frameSize = 2;
     frames[nb_frames].frame[0] = 0x04;
     frames[nb_frames].frame[1] = get_commande_clignotant_droit() ? 0x01 : 0x00;
     nb_frames++;
 
     // 5. Clignotant gauche
-    frames[nb_frames].serNum = SER_SERIE;
+    frames[nb_frames].serNum = SER_NUM_BGF;
     frames[nb_frames].frameSize = 2;
     frames[nb_frames].frame[0] = 0x05;
     frames[nb_frames].frame[1] = get_commande_clignotant_gauche() ? 0x01 : 0x00;
@@ -242,14 +240,43 @@ int main(void) {
 
             if (code_erreur == DRV_SUCCESS && nb_trames_serie > 0) {
                 for(v_uint32_t i = 0; i < nb_trames_serie; i++) {
-                    decoder_trame_serie(donnees_serie[i].frame[0]);
+                    if(donnees_serie[i].serNum == SER_NUM_COMODO) {
+                        decoder_trame_serie(donnees_serie[i].frame[0]);
+                    }
+                    else if(donnees_serie[i].serNum == SER_NUM_BGF) {
+                        if(donnees_serie[0].frame[i] == ENUM_ID_MESSAGE_FEU_T_MSG_FEU_POSITION) {
+                            set_acq_feux_position(ACQ_OK);
+                        }
+                        if(donnees_serie[0].frame[i] == ENUM_ID_MESSAGE_FEU_T_MSG_FEU_CROISEMENT) {
+                            set_acq_feux_croisement(ACQ_OK);
+                        }
+                        if(donnees_serie[0].frame[i] == ENUM_ID_MESSAGE_FEU_T_MSG_FEU_ROUTE) {
+                            set_acq_feux_route(ACQ_OK);
+                        }
+                        if(donnees_serie[0].frame[i] == ENUM_ID_MESSAGE_FEU_T_MSG_CLIGNOTANT_DROIT) {
+                            set_acq_clignotant_droit(ACQ_OK);
+                        }
+                        if(donnees_serie[0].frame[i] == ENUM_ID_MESSAGE_FEU_T_MSG_CLIGNOTANT_GAUCHE) {
+                            set_acq_clignotant_gauche(ACQ_OK);
+                        }
+                    }
                 }
+            }
+            if(get_acq_clignotant_droit() && get_acq_clignotant_gauche()) {
+                set_acq_warning(ACQ_OK);
+                set_acq_clignotant_droit(ACQ_NON_VALIDE);
+                set_acq_clignotant_gauche(ACQ_NON_VALIDE);
             }
         }
 
-        // TODO : MACHINE D'ÉTAT
-
-
+        fsm_feux_classiques(ENUM_ID_MESSAGE_FEU_T_MSG_FEU_POSITION);
+        fsm_feux_classiques(ENUM_ID_MESSAGE_FEU_T_MSG_FEU_CROISEMENT);
+        fsm_feux_classiques(ENUM_ID_MESSAGE_FEU_T_MSG_FEU_ROUTE);
+        fsm_feux_clignotant_warning(ENUM_ID_MESSAGE_FEU_T_MSG_CLIGNOTANT_DROIT);
+        fsm_feux_clignotant_warning(ENUM_ID_MESSAGE_FEU_T_MSG_CLIGNOTANT_GAUCHE);
+        fsm_feux_clignotant_warning(ENUM_ID_MESSAGE_FEU_T_MSG_WARNING);
+        fsm_essuie_glace_lave_glace();
+        
         // Encodage et Envoi de la trame UDP
         encoder_trame_udp(trame_udp_a_envoyer);
         drv_write_udp_200ms(identifiant_driver, trame_udp_a_envoyer);
