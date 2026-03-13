@@ -12,8 +12,6 @@
 #include <time.h>
 #include "fsm_feux_classiques.h"
 
-time_t g_allumes_debut_ms = 0;
-
 /**
  * @brief Etats possibles de la machine d'états des feux.
  */
@@ -61,7 +59,7 @@ static int callback_initialisation(void) {
  */
 static int callback_allumer_feux(void) {
     printf("[FSM] -> ALLUMER FEUX\n");
-    g_allumes_debut_ms = time(NULL); 
+    set_timer_feux(time(NULL));
     return 0;
 }
 
@@ -168,7 +166,7 @@ int get_next_event(int current_state, enum_id_message_feu_t id_message_feux)
                 return EV_ACQUITTEMENT_RECU;
             }
 
-            const double elapsed = difftime(time(NULL), g_allumes_debut_ms);
+            const double elapsed = difftime(time(NULL), get_timer_feux());
             if (elapsed >= ACQ_FEUX_CLASSIQUES) {
                 return EV_ACQUITTEMENT_EXPIRE;
             }
