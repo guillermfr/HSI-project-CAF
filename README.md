@@ -30,15 +30,20 @@ Pour démarrer la simulation, il suffit de faire la commande suivante à la raci
 ```
 
 ***
+
 ## Démarche
 
 ### Question 1
 
-Nous avons décidé d'utilisé un [json](lib/structure.json) qui nous permet de lister toutes les variables et structures qui seront générés automatiquement via un [script python](lib/generation_lib.py) et de la librairie [Jinja2](https://jinja.palletsprojects.com/en/stable/).
+Nous avons décidé d'utilisé un [fichier json](lib/structure.json) qui nous permet de lister toutes les variables et structures qui seront générées automatiquement via un [script python](lib/generation_lib.py) et de la librairie [Jinja2](https://jinja.palletsprojects.com/en/stable/).
+
+Jinja2 permet de générer du code à partir de template. Nous avons alors créé des templates pours les différents types de fichiers que l'on voulait créer ([define.h](lib/templates/define.h), [donnees.c](lib/templates/donnees.c), [donnees.h](lib/templates/donnees.h) et [types.h](lib/templates/types.h)).
 
 ### Question 2
 
 Afin de générer la librairie statisque, nous utilisons un script shell qui permet de créer une librairie statistique, [lib.a](lib/lib.a), à partir des fichiers générés par le script python de la question 1.
+
+Le [fichier makefile](lib/makefile) permet d'automatiser la compilation de la librairie statique, en particulier avec l'utilisation de la commande `ar rcs $(LIB_NAME) *.o`.
 
 ### Question 3
 
