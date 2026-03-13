@@ -180,10 +180,15 @@
                     "nom": "MSG_CLIGNOTANT_GAUCHE",
                     "valeur": 5,
                     "commentaire": "Clignotant gauche"
+                },
+                {
+                    "nom": "MSG_WARNING",
+                    "valeur": 6,
+                    "commentaire": "Warning"
                 }
             ],
-            "domaine" : "0..5",
-            "commentaire": "Identifiant du message BCGV vers BGF"
+            "domaine" : "0..6",
+            "commentaire": "Identifiant du message BCGV vers BGF, avec ajout de l'ID pour le warning"
         }
     ],
     "donnees" : [
