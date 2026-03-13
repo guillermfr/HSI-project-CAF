@@ -13,9 +13,6 @@
 
 #include <time.h>
 
-static time_t g_ack_debut_s   = 0;
-static time_t g_clignotement_debut_s = 0;
-
 /**
  * @brief Etats possibles de la machine d'états des clignotants et warnings.
  */
@@ -67,8 +64,7 @@ static int callback_initialisation(void) {
  */
 static int callback_enter_actives_allumes(void) {
     printf("[FSM] -> ACTIVES_ALLUMES (feux ON, attente ACK)\n");
-    g_ack_debut_s = time(NULL);
-
+    set_timer_clignotants_warning_acquittement(time(NULL));
     return 0;
 }
 
@@ -80,7 +76,7 @@ static int callback_enter_actives_allumes(void) {
  */
 static int callback_enter_actives_eteints(void) {
     printf("[FSM] -> ACTIVES_ETEINTS (feux OFF, attente ACK)\n");
-    g_ack_debut_s = time(NULL);
+    set_timer_clignotants_warning_acquittement(time(NULL));
     return 0;
 }
 
@@ -92,7 +88,7 @@ static int callback_enter_actives_eteints(void) {
  */
 static int callback_enter_acquittes_allume(void) {
     printf("[FSM] -> ACQUITTES_ALLUME (clignotement ON)\n");
-    g_clignotement_debut_s = time(NULL);
+    set_timer_clignotants_warning_changement(time(NULL));
     return 0;
 }
 
@@ -104,7 +100,7 @@ static int callback_enter_acquittes_allume(void) {
  */
 static int callback_enter_acquittes_eteint(void) {
     printf("[FSM] -> ACQUITTES_ETEINT (clignotement OFF)\n");
-    g_clignotement_debut_s = time(NULL);
+    set_timer_clignotants_warning_changement(time(NULL));
     return 0;
 }
 
@@ -207,7 +203,6 @@ int get_next_event(int current_state, enum_id_message_feu_t id_message_clignotan
         return EV_CMD_0;
     }
 
-    //TODO: mettre timer dans la mega variable globale
     switch (current_state) {
 
         case ST_ACTIVES_ALLUMES:
@@ -217,7 +212,7 @@ int get_next_event(int current_state, enum_id_message_feu_t id_message_clignotan
                 return EV_ACQUITTEMENT_RECU;
             }
 
-            const double elapsed = difftime(time(NULL), g_ack_debut_s);
+            const double elapsed = difftime(time(NULL), get_timer_clignotants_warning_acquittement());
             if(elapsed >= ACQ_FEUX_CLIGNOTANTS_WARNINGS) {
                 return EV_ACQUITTEMENT_EXPIRE;
             }
@@ -229,7 +224,7 @@ int get_next_event(int current_state, enum_id_message_feu_t id_message_clignotan
         case ST_ACQUITTES_ALLUME:
         case ST_ACQUITTES_ETEINT: {
 
-            const double elapsed = difftime(time(NULL), g_clignotement_debut_s);
+            const double elapsed = difftime(time(NULL), get_timer_clignotants_warning_changement());
             if(elapsed >= ACQ_FEUX_CLIGNOTANTS_WARNINGS) {
                 return EV_TEMPS_1SEC;
             }
@@ -248,7 +243,13 @@ int get_next_event(int current_state, enum_id_message_feu_t id_message_clignotan
 
 }
 
-//TODO: doxygen
+/**
+ * @brief Fonction de la FSM des clignotants et du warning.
+ * Cette fonction doit être appelée à chaque cycle de la boucle principale du programme.
+ * 
+ * @param id_message_clignotants_warning Type de clignotants ou warning à gérer par la FSM.
+ * @return void
+ */
 void fsm_feux_clignotant_warning(enum_id_message_feu_t id_message_clignotants_warning)
 {
     int i = 0;
