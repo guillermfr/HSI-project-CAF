@@ -235,9 +235,11 @@
         { "id" : 29, "nom" : "etat_fsm_clignotants_droit", "type" : "v_uint8_t", "dimension" : "1", "init" : "0", "commentaire" : "Etat de la FSM clignotants - clignotant droit" },
         { "id" : 30, "nom" : "etat_fsm_clignotants_gauche", "type" : "v_uint8_t", "dimension" : "1", "init" : "0", "commentaire" : "Etat de la FSM clignotants - clignotant gauche" },
         { "id" : 31, "nom" : "etat_fsm_warning", "type" : "v_uint8_t", "dimension" : "1", "init" : "0", "commentaire" : "Etat de la FSM warning - warning actif ou non (toggle)" },
+        { "id" : 32, "nom" : "etat_fsm_essuie_glace_lave_glace", "type" : "v_uint8_t", "dimension" : "1", "init" : "0", "commentaire" : "Etat de la FSM essuie glace - lave glace" },
 
-        { "id" : 32, "nom" : "timer_feux", "type" : "v_double_t", "dimension" : "1", "init" : "0", "commentaire" : "Timer pour la gestion des feux (ms)" },
-        { "id" : 33, "nom" : "timer_clignotants_warning", "type" : "v_double_t", "dimension" : "1", "init" : "0", "commentaire" : "Timer pour la gestion des clignotants et du warning (ms)" }
+        { "id" : 33, "nom" : "timer_feux_acquittement", "type" : "v_double_t", "dimension" : "1", "init" : "0", "commentaire" : "Timer pour la gestion des feux (ms)" },
+        { "id" : 34, "nom" : "timer_clignotants_warning_acquittement", "type" : "v_double_t", "dimension" : "1", "init" : "0", "commentaire" : "Timer pour la gestion de l'acquittement des clignotants et du warning (ms)" },
+        { "id" : 35, "nom" : "timer_clignotants_warning_changement", "type" : "v_double_t", "dimension" : "1", "init" : "0", "commentaire" : "Timer pour la gestion des clignotants et du warning (ms)" }
     ]
     
 }
