@@ -47,7 +47,13 @@ Le [fichier makefile](lib/makefile) permet d'automatiser la compilation de la li
 
 ### Question 3
 
+Nous avons bien utilisé et testé les fonctions `drv_open` et `drv_read_udp_100ms`. Ces fonctions nous permettent d'afficher la trame envooyée en UDP toutes les les 100ms.
+
 ### Question 4
+
+Nous avons créé 3 fichiers, ainsi que leur 3 fichiers d'entête, qui contiennent chacun une finite state machine (FSM) : la [FSM pour les feux classiques](fsm/fsm_feux_classiques.c), la [FSM pour les clignotants et warnings](fsm/fsm_feux_clignotants_warnings.c) et la [FSM pour les essuie-glaces et le lave glace](fsm/fsm_essuie-glaces_lave_glace.c).
+
+Chaque FSM reprend le schéma présent dans l'énoncé et gère les différentes transitions entre les états en fonction des entrées.
 
 ### Question 5
 
@@ -56,13 +62,20 @@ En ce qui concerne l'automatisation de la compilation des librairie, nous avons 
 - dans le dossier `lib` : un makefile qui permet la compilation des variables et strucutres de la question 1 et la compilation de la librairie statique de la question 2.
 
 - dans le dossier `app` : un autre makefile qui permet de créer l'éxécutable qui s'occupera de la gestion de BCGV.
+
 - À la racine du projet : un dernier makefile qui appelle les deux autres makefiles.
 
 Le fichier [lancement.sh](lancement.sh) permet de lancer notre application et le driver ensemble.
 
 ### Question 6
 
+À partir de cette question, nous nous sommes de nouveau intéressé à la lecture des trames. À l'aide des tableau présent dans l'annonce, nous avons pus traduire correctement les bits que nous lisions à l'aide question 3. Nous avons créer deux fonctions, une pour l'UDP (`decoder_trame_udp`) et une pour la série (`decoder_trame_serie`).
+
+À l'intérieur des ces fonctions, après les avoir décoder, stockons les valeurs des variables grâces aux setters crées automatiquement dans la question 1
+
 ### Question 7
+
+Dans cette question, il s'affit de faire l'inverse de la question précédente. Nous avons crées une fonction pour chaque trame à encoder (`encoder_trame_udp` et `envoyer_trame_serie`) afin de permettre de préparer des trames pour l'envoyer vers le tableau de bord.  
 
 ### Question 8
 
