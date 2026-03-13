@@ -159,8 +159,8 @@ int get_next_event(int current_state)
         return EV_INIT;
     }
 
-    boolean_t cmd_eg = get_cmd_essuie_glace();
-    boolean_t cmd_lg = get_cmd_lave_glace();
+    boolean_t cmd_eg = get_commande_essuie_glace();
+    boolean_t cmd_lg = get_commande_lave_glace();
 
     // Cas spécial pour l'état TIMER
     if (current_state == ST_ESSUIE_GLACE_LAVE_GLACE_ACTIVES) {
@@ -189,36 +189,38 @@ int get_next_event(int current_state)
     return EV_CMD_EG_0;
 }
 
-int main(void)
+/**
+ * @brief Fonction de la FSM des essuie-glace et du lave glace.
+ * Cette fonction doit être appelée à chaque cycle de la boucle principale du programme.
+ * 
+ * @return void
+ */
+void fsm_essuie_glace_lave_glace()
 {
     int i = 0;
-    int ret = 0; 
     int event = EV_NONE;
-    int state = ST_INIT;
+    int state = get_etat_fsm_essuie_glaces_lave_glace();
     
-    /* While FSM hasn't reach end state */
-    while (state != ST_TERM) {
-        
-        /* Get event */
-        event = get_next_event(state);
-        
-        /* For each transitions */
-        for (i = 0; i < TRANS_COUNT; i++) {
-            /* If State is current state OR The transition applies to all states ...*/
-            if ((state == trans[i].state) || (ST_ANY == trans[i].state)) {
-                /* If event is the transition event OR the event applies to all */
-                if ((event == trans[i].event) || (EV_ANY == trans[i].event)) {
-                    /* Apply the new state */
-                    state = trans[i].next_state;
-                    if (trans[i].callback != NULL) {
-                        /* Call the state function */
-                        ret = (trans[i].callback)();
-                    }
-                    break;
+    /* Get event */
+    event = get_next_event(state);
+    
+    /* For each transitions */
+    for (i = 0; i < TRANS_COUNT; i++) {
+        /* If State is current state OR The transition applies to all states ...*/
+        if ((state == trans[i].state) || (ST_ANY == trans[i].state)) {
+            /* If event is the transition event OR the event applies to all */
+            if ((event == trans[i].event) || (EV_ANY == trans[i].event)) {
+                /* Apply the new state */
+                state = trans[i].next_state;
+                set_etat_fsm_essuie_glaces_lave_glace(state);
+                if (trans[i].callback != NULL) {
+                    /* Call the state function */
+                    (void)trans[i].callback();
                 }
+                break;
             }
         }
     }
 
-    return ret;
+   
 }

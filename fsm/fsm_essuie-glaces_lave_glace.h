@@ -12,15 +12,7 @@
 #include "../lib/output/donnees.h"
 #include "../lib/output/define.h"
 
-/**
- * @brief Détermine le prochain événement à traiter.
- *
- * Lit les entrées de commande et retourne l'événement correspondant en fonction de l'état actuel.
- * L'ordre des conditions est important dans la logique de la FSM.
- *
- * @param current_state État courant de la FSM.
- * @return Evénement à traiter.
- */
 int get_next_event(int current_state);
+void fsm_essuie_glace_lave_glace();
 
 #endif 
