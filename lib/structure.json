@@ -50,6 +50,13 @@
             "commentaire" : "Entier signé 32 bits"
         },
         {
+            "nom" : "v_double_t",
+            "type" : "atom",
+            "declaration" : "double",
+            "domaine" : "0.0..2.0",
+            "commentaire" : "Nombre à virgule flottante double précision"
+        },
+        {
             "nom" : "numero_trame_t",
             "type" : "atom",
             "declaration" : "v_uint8_t",
@@ -227,7 +234,10 @@
         { "id" : 28, "nom" : "etat_fsm_feux_classiques_route", "type" : "v_uint8_t", "dimension" : "1", "init" : "0", "commentaire" : "Etat de la FSM feux classiques - feux de route" },
         { "id" : 29, "nom" : "etat_fsm_clignotants_droit", "type" : "v_uint8_t", "dimension" : "1", "init" : "0", "commentaire" : "Etat de la FSM clignotants - clignotant droit" },
         { "id" : 30, "nom" : "etat_fsm_clignotants_gauche", "type" : "v_uint8_t", "dimension" : "1", "init" : "0", "commentaire" : "Etat de la FSM clignotants - clignotant gauche" },
-        { "id" : 31, "nom" : "etat_fsm_warning", "type" : "v_uint8_t", "dimension" : "1", "init" : "0", "commentaire" : "Etat de la FSM warning - warning actif ou non (toggle)" }
+        { "id" : 31, "nom" : "etat_fsm_warning", "type" : "v_uint8_t", "dimension" : "1", "init" : "0", "commentaire" : "Etat de la FSM warning - warning actif ou non (toggle)" },
+
+        { "id" : 32, "nom" : "timer_feux", "type" : "v_double_t", "dimension" : "1", "init" : "0", "commentaire" : "Timer pour la gestion des feux (ms)" },
+        { "id" : 33, "nom" : "timer_clignotants_warning", "type" : "v_double_t", "dimension" : "1", "init" : "0", "commentaire" : "Timer pour la gestion des clignotants et du warning (ms)" }
     ]
     
 }
