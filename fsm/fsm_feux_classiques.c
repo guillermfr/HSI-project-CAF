@@ -59,7 +59,7 @@ static int callback_initialisation(void) {
  */
 static int callback_allumer_feux(void) {
     printf("[FSM] -> ALLUMER FEUX\n");
-    set_timer_feux(time(NULL));
+    set_timer_feux_acquittement(time(NULL));
     return 0;
 }
 
@@ -166,7 +166,7 @@ int get_next_event(int current_state, enum_id_message_feu_t id_message_feux)
                 return EV_ACQUITTEMENT_RECU;
             }
 
-            const double elapsed = difftime(time(NULL), get_timer_feux());
+            const double elapsed = difftime(time(NULL), get_timer_feux_acquittement());
             if (elapsed >= ACQ_FEUX_CLASSIQUES) {
                 return EV_ACQUITTEMENT_EXPIRE;
             }
