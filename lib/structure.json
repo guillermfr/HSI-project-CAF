@@ -53,7 +53,7 @@
             "nom" : "v_double_t",
             "type" : "atom",
             "declaration" : "double",
-            "domaine" : "0.0..2.0",
+            "domaine" : "-1.7E+308..1.7E+308",
             "commentaire" : "Nombre à virgule flottante double précision"
         },
         {
