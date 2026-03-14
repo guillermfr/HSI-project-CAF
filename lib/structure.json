@@ -239,7 +239,8 @@
 
         { "id" : 33, "nom" : "timer_feux_acquittement", "type" : "v_double_t", "dimension" : "1", "init" : "0", "commentaire" : "Timer pour la gestion des feux (ms)" },
         { "id" : 34, "nom" : "timer_clignotants_warning_acquittement", "type" : "v_double_t", "dimension" : "1", "init" : "0", "commentaire" : "Timer pour la gestion de l'acquittement des clignotants et du warning (ms)" },
-        { "id" : 35, "nom" : "timer_clignotants_warning_changement", "type" : "v_double_t", "dimension" : "1", "init" : "0", "commentaire" : "Timer pour la gestion des clignotants et du warning (ms)" }
+        { "id" : 35, "nom" : "timer_clignotants_warning_changement", "type" : "v_double_t", "dimension" : "1", "init" : "0", "commentaire" : "Timer pour la gestion des clignotants et du warning (ms)" },
+        { "id" : 36, "nom" : "timer_essuie_glace_lave_glace", "type" : "v_double_t", "dimension" : "1", "init" : "0", "commentaire" : "Timer pour la gestion des essuie-glaces et du lave-glace (ms)" }
     ]
     
 }

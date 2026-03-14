@@ -12,8 +12,6 @@
 #include <time.h>
 #include "fsm_essuie-glaces_lave_glace.h"
 
-static time_t g_timer_post_lg_start_s = 0;
-
 /**
  * @brief Etats possibles de la machine d'états des essuie-glaces et du lave glace.
  */
@@ -98,7 +96,7 @@ static int callback_eteindre_timer_essuie_glace_lave_glace(void) {
  */
 static int callback_demarrer_timer_post_lave_glace(void) {
     //printf("[FSM] -> DEMARRER TIMER POST LAVE-GLACE (2s)\n");
-    g_timer_post_lg_start_s = time(NULL);
+    set_timer_essuie_glace_lave_glace(time(NULL));
     return 0;
 }
 
@@ -174,7 +172,7 @@ int get_next_event_essuie_glace_lave_glace(int current_state)
     }
 
     if (current_state == ST_ETEINDRE_TIMER_ESSUIE_GLACE_LAVE_GLACE_ACTIVES) {
-        const double elapsed = difftime(time(NULL), g_timer_post_lg_start_s);
+        const double elapsed = difftime(time(NULL), get_timer_essuie_glace_lave_glace());
         if (elapsed >= TIMER_ESSUIE_GLACES_LAVE_GLACE) {
             return EV_TEMPS_SUPERIEUR_2;
         }
