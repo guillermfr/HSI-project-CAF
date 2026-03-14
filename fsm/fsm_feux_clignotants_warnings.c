@@ -52,7 +52,7 @@ typedef enum {
  * @brief Callback appelé lors de la transition d'initialisation de la FSM.
  */
 static int callback_initialisation(void) {
-    printf("[FSM] -> INITIALISATION\n");
+    //printf("[FSM] -> INITIALISATION\n");
     return 0;
 }
 
@@ -63,7 +63,7 @@ static int callback_initialisation(void) {
  * 
  */
 static int callback_enter_actives_allumes(void) {
-    printf("[FSM] -> ACTIVES_ALLUMES (feux ON, attente ACK)\n");
+    //printf("[FSM] -> ACTIVES_ALLUMES (feux ON, attente ACK)\n");
     set_timer_clignotants_warning_acquittement(time(NULL));
     return 0;
 }
@@ -75,7 +75,7 @@ static int callback_enter_actives_allumes(void) {
  * 
  */
 static int callback_enter_actives_eteints(void) {
-    printf("[FSM] -> ACTIVES_ETEINTS (feux OFF, attente ACK)\n");
+    //printf("[FSM] -> ACTIVES_ETEINTS (feux OFF, attente ACK)\n");
     set_timer_clignotants_warning_acquittement(time(NULL));
     return 0;
 }
@@ -87,7 +87,7 @@ static int callback_enter_actives_eteints(void) {
  * 
  */
 static int callback_enter_acquittes_allume(void) {
-    printf("[FSM] -> ACQUITTES_ALLUME (clignotement ON)\n");
+    //printf("[FSM] -> ACQUITTES_ALLUME (clignotement ON)\n");
     set_timer_clignotants_warning_changement(time(NULL));
     return 0;
 }
@@ -99,7 +99,7 @@ static int callback_enter_acquittes_allume(void) {
  * 
  */
 static int callback_enter_acquittes_eteint(void) {
-    printf("[FSM] -> ACQUITTES_ETEINT (clignotement OFF)\n");
+    //printf("[FSM] -> ACQUITTES_ETEINT (clignotement OFF)\n");
     set_timer_clignotants_warning_changement(time(NULL));
     return 0;
 }
@@ -108,7 +108,7 @@ static int callback_enter_acquittes_eteint(void) {
  * @brief Callback appelé lors de la transition où les clignotants passent à l'état éteints.
  */
 static int callback_eteindre_feux(void) {
-    printf("[FSM] -> ETEINTS\n");
+    //printf("[FSM] -> ETEINTS\n");
     return 0;
 }
 
@@ -116,7 +116,7 @@ static int callback_eteindre_feux(void) {
  * @brief Callback appelé lorsqu'il y a une erreur.
  */
 static int callback_erreur(void) {
-    printf("[FSM] -> ERREUR\n");
+    //printf("[FSM] -> ERREUR\n");
     return 0;
 }
 

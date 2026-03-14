@@ -47,7 +47,7 @@ typedef enum {
  * @brief Callback appelé lors de la transition d'initialisation de la FSM.
  */
 static int callback_initialisation(void) {
-    printf("[FSM] -> INITIALISATION\n");
+    //printf("[FSM] -> INITIALISATION\n");
     return 0;
 }
 
@@ -58,7 +58,7 @@ static int callback_initialisation(void) {
  * 
  */
 static int callback_allumer_feux(void) {
-    printf("[FSM] -> ALLUMER FEUX\n");
+    //printf("[FSM] -> ALLUMER FEUX\n");
     set_timer_feux_acquittement(time(NULL));
     return 0;
 }
@@ -67,7 +67,7 @@ static int callback_allumer_feux(void) {
  * @brief Callback appelé lors de la transition après avoir reçu l'acquittement.
  */
 static int callback_acquitter(void) {
-    printf("[FSM] -> ACQUITTER\n");
+    //printf("[FSM] -> ACQUITTER\n");
     return 0;
 }
 
@@ -75,7 +75,7 @@ static int callback_acquitter(void) {
  * @brief Callback appelé lors de la transition où les feux passent de l'état allumés à éteints.
  */
 static int callback_eteindre_feux(void) {
-    printf("[FSM] -> ETEINDRE FEUX\n");
+    //printf("[FSM] -> ETEINDRE FEUX\n");
     return 0;
 }
 
@@ -83,7 +83,7 @@ static int callback_eteindre_feux(void) {
  * @brief Callback appelé lorsqu'il y a une erreur.
  */
 static int callback_erreur(void) {
-    printf("[FSM] -> ERREUR\n");
+    //printf("[FSM] -> ERREUR\n");
     return 0;
 }
 

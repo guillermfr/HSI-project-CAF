@@ -54,7 +54,7 @@ typedef enum {
  * @brief Callback appelé lors de la transition d'initialisation de la FSM.
  */
 static int callback_initialisation(void) {
-    printf("[FSM] -> INITIALISATION : essuie-glace et lave-glace éteints\n");
+    //printf("[FSM] -> INITIALISATION : essuie-glace et lave-glace éteints\n");
     return 0;
 }
 
@@ -62,7 +62,7 @@ static int callback_initialisation(void) {
  * @brief Callback appelé lors de la transition où seuls les essuie-glaces sont allumés.
  */
 static int callback_allumer_essuie_glace(void) {
-    printf("[FSM] -> ESSUIE-GLACE ACTIVÉ\n");
+    //printf("[FSM] -> ESSUIE-GLACE ACTIVÉ\n");
     return 0;
 }
 
@@ -70,7 +70,7 @@ static int callback_allumer_essuie_glace(void) {
  * @brief Callback appelé lors de la transition où seuls les essuie-glaces doivent être éteints.
  */
 static int callback_eteindre_tout(void) {
-    printf("[FSM] -> ESSUIE-GLACE ETEINDRE\n");
+    //printf("[FSM] -> ESSUIE-GLACE ETEINDRE\n");
     return 0;
 }
 
@@ -78,7 +78,7 @@ static int callback_eteindre_tout(void) {
  * @brief Callback appelé lors de la transition où seuls les essuie-glaces et le lave glace sont allumés.
  */
 static int callback_allumer_essuie_glace_lave_glace(void) {
-    printf("[FSM] -> ESSUIE-GLACE + LAVE-GLACE ACTIVÉS\n");
+    //printf("[FSM] -> ESSUIE-GLACE + LAVE-GLACE ACTIVÉS\n");
     return 0;
 }
 
@@ -86,8 +86,7 @@ static int callback_allumer_essuie_glace_lave_glace(void) {
  * @brief Callback appelé lors de la transition où les essuie-glaces et le lave glace doivent être éteints après le timer.
  */
 static int callback_eteindre_timer_essuie_glace_lave_glace(void) {
-    printf("[FSM] -> ARRÊT TEMPORISÉ : essuie-glace maintenu après lave-glace\n");
-   
+    //printf("[FSM] -> ARRÊT TEMPORISÉ : essuie-glace maintenu après lave-glace\n");
     return 0;
 }
 
@@ -98,7 +97,7 @@ static int callback_eteindre_timer_essuie_glace_lave_glace(void) {
  * 
  */
 static int callback_demarrer_timer_post_lave_glace(void) {
-    printf("[FSM] -> DEMARRER TIMER POST LAVE-GLACE (2s)\n");
+    //printf("[FSM] -> DEMARRER TIMER POST LAVE-GLACE (2s)\n");
     g_timer_post_lg_start_s = time(NULL);
     return 0;
 }
