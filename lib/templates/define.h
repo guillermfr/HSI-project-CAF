@@ -7,8 +7,6 @@
 #ifndef DEFINE_H 
 #define DEFINE_H
 
-//TODO: mettre des noms spéciaux pour les booléens
-
 {% for item in donnees -%}
     {%- set limites = item.domaine.split('..') -%}
 /**

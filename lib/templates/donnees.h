@@ -9,8 +9,6 @@
 
 #include "types.h"
 
-//TODO: pour les if dans les setter, enelver le supérieur à 0 pour les bool --> permet d'éviter les warnings
-
 /**
  * @brief structure du BCGV
  * @details Contient les informations nécessaires pour la gestion du BCGV

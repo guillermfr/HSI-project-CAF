@@ -1,9 +1,7 @@
 #include "donnees.h"
 #include "define.h"
 
-donnees_bcgv_t dcgv ;
-
-//TODO: revoir les if des setter pour les enums
+donnees_bcgv_t dcgv;
 
 //Getters
 {% for item in donnees %}
