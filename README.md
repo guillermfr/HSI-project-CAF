@@ -7,6 +7,7 @@
 
 ## Premier lancement
 Afin de lancer notre projet, vous devez d'abord compiler l'exécutable à l'aide de la commande suivante à la racine du projet :
+
 ```bash
 make
 ```
@@ -16,15 +17,18 @@ make
 L'interface graphique utilise un conteneur docker hébergant Grafana.
 
 Pour démarrer le conteneur, il suffit de lancer la commande suivante dans le sous-dossier `docker`:
+
 ```bash
 docker-compose up
 ```
-Une fois démarré , à l'aide d'un navigateur internet, il faut se rendre à l'adresse suivante : `http://localhost:3000/`.
+
+Une fois l'interface graphique démarrée, à l'aide d'un navigateur internet, il faut se rendre à l'adresse suivante : `http://localhost:3000/`.
 
 
 ## Démarrage de la simulation
 
 Pour démarrer la simulation, il suffit de faire la commande suivante à la racine du projet :
+
 ```bash
 ./lancement.sh
 ```
@@ -41,13 +45,13 @@ Jinja2 permet de générer du code à partir de template. Nous avons alors cré�
 
 ### Question 2
 
-Afin de générer la librairie statisque, nous utilisons un script shell qui permet de créer une librairie statistique, [lib.a](lib/lib.a), à partir des fichiers générés par le script python de la question 1.
+Afin de générer la librairie statique, nous utilisons un script shell créant le fichier [lib.a](lib/lib.a) à partir des fichiers générés par le script python de la question 1.
 
 Le [fichier makefile](lib/makefile) permet d'automatiser la compilation de la librairie statique, en particulier avec l'utilisation de la commande `ar rcs $(LIB_NAME) *.o`.
 
 ### Question 3
 
-Nous avons bien utilisé et testé les fonctions `drv_open` et `drv_read_udp_100ms`. Ces fonctions nous permettent d'afficher la trame envooyée en UDP toutes les les 100ms.
+Nous avons bien utilisé et testé les fonctions `drv_open` et `drv_read_udp_100ms`. Ces fonctions nous permettent d'afficher la trame envoyée en UDP toutes les 100ms.
 
 ### Question 4
 
@@ -57,11 +61,11 @@ Chaque FSM reprend le schéma présent dans l'énoncé et gère les différentes
 
 ### Question 5
 
-En ce qui concerne l'automatisation de la compilation des librairie, nous avons suivie le principe suivant:
+En ce qui concerne l'automatisation de la compilation des librairies, nous avons suivi le principe suivant:
 
-- dans le dossier `lib` : un makefile qui permet la compilation des variables et strucutres de la question 1 et la compilation de la librairie statique de la question 2.
+- Dans le dossier `lib` : un makefile qui permet la compilation des variables et structures de la question 1 et la compilation de la librairie statique de la question 2.
 
-- dans le dossier `app` : un autre makefile qui permet de créer l'éxécutable qui s'occupera de la gestion de BCGV.
+- Dans le dossier `app` : un autre makefile qui permet de créer l'éxécutable qui s'occupera de la gestion de BCGV.
 
 - À la racine du projet : un dernier makefile qui appelle les deux autres makefiles.
 
@@ -69,14 +73,18 @@ Le fichier [lancement.sh](lancement.sh) permet de lancer notre application et le
 
 ### Question 6
 
-À partir de cette question, nous nous sommes de nouveau intéressé à la lecture des trames. À l'aide des tableau présent dans l'annonce, nous avons pus traduire correctement les bits que nous lisions à l'aide question 3. Nous avons créer deux fonctions, une pour l'UDP (`decoder_trame_udp`) et une pour la série (`decoder_trame_serie`).
+À partir de cette question, nous nous sommes de nouveau intéressé à la lecture des trames. À l'aide des tableaux présents dans l'énoncé, nous avons pu traduire correctement les bits que nous lisions à la question 3. Nous avons créé deux fonctions, une pour l'UDP (`decoder_trame_udp`) et une pour la série (`decoder_trame_serie`).
 
-À l'intérieur des ces fonctions, après les avoir décoder, stockons les valeurs des variables grâces aux setters crées automatiquement dans la question 1
+À l'intérieur de ces fonctions, après avoir décodé les trames, nous stockons les valeurs des variables grâce aux setters créés automatiquement dans la question 1.
 
 ### Question 7
 
-Dans cette question, il s'affit de faire l'inverse de la question précédente. Nous avons crées une fonction pour chaque trame à encoder (`encoder_trame_udp` et `envoyer_trame_serie`) afin de permettre de préparer des trames pour l'envoyer vers le tableau de bord.  
+Dans cette question, il suffit de faire l'inverse de la question précédente. Nous avons alors créé une fonction pour chaque trame à encoder (`encoder_trame_udp` et `envoyer_trame_serie`) afin de permettre de préparer des trames pour l'envoyer vers le tableau de bord.  
 
 ### Question 8
 
-Dans cette question, nous avons pu retrouver dans les parties de code que nous avions précédemment faire afin de mettre au propre le main pour suivre le déroulement expliqué dans le diagramme.
+Dans cette question, nous avons utilisé toutes les fonctions créées jusqu'à maintenant : encodage et décodage des trames, gestion de la FSM, etc. Nous avons alors créé une boucle infinie qui permet de lire les trames en UDP et en série, de les décoder, de mettre à jour les variables et d'envoyer les trames préparées vers le tableau de bord.
+
+### Précision sur les fichiers FIFO
+
+Dans notre projet, nous n'avons pas utilisé les fichiers FIFO mis à disposition dans l'énoncé par manque de temps. Cela n'empêche pas le dashboard d'afficher les informations correctement et les FSM de fonctionner, mais il est possible que certaines trames soient perdues. 
